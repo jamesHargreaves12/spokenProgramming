@@ -13,9 +13,9 @@ for i in range(1,17):
     transcript_count += len(transcript_files)
     for audio_file in stripped_audio:
         if audio_file not in response_id_to_count.keys():
-            response_id_to_count[audio_file]= 1
+            response_id_to_count[audio_file] = 1
         else:
-            response_id_to_count[audio_file]+= 1
+            response_id_to_count[audio_file] += 1
         if audio_file not in stripped_trans:
             print("ISSUE(missing transcript): " + str(i) + " file: " + audio_file)
     for trans_file in stripped_trans:

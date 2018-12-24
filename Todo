@@ -1,9 +1,57 @@
 Preprocessing
-replace word numbers by number numbers
-define an ambiguous language and check that all the transcripts conform to it
+Done ---- replace word numbers by number numbers
+DONE ---- define an ambiguous language and check that all the transcripts conform to it
 issue with transcript 13/985160.txt
 "ith element of list"
-delete comments
-upper case all True/False
-For statement statement block rule not nice
-look at append and check they are used consistantly
+DONE ---- delete comments
+DONE ---- upper case all True/False
+REMOVED ----- For statement statement block rule not nice
+DONE ----- look at append and check they are used consistantly
+
+DONE ----- string const removal? and number const removal
+string const removal in transcript?
+DONE ----- representing indexing? currently just [ i ]
+manual additions to the symbol to name mapping
+DONE ---- specific string const for "newline"
+DONE ---- "end for" only removes the end in the baseline -> reduced the minimum edit distance by 5.58% (625-> 590)
+"set VARIABLE to" and "add VARIABLE to" "initialize VARAIBLE as" in baseline to VARIABLE
+"empty" or "empty list" => []
+"and" is an issue
+"that value" => most previous variable (or x in the case of for x in y....)
+(1+2)*5 in pseudo code means we have to have brackets in transcripts which is annoying
+DONE ---- "at index" "VARIABLE of VARIABLE " "indexed at" "value of VARIABLE at the key VARIABLE" indexing represented differently from [] represent as x[y] => x index(y)
+          "looking up VARIABLE in VARIABLE" "VARIABLE position VARIABLE" 588->580
+change how token to symbol works by added the key words at the end
+DONE --- "increment VARIABLE" => 590->588 - improved by stemming
+not sure I like += being considered two tokens? one conceptual idea just map plus equal to it?
+        "is less than or equal to" as above
+"for each VARIABLE between NUMBER and NUMBER"
+DONE ----- lemmatization and stemming ect
+normalization relevant?
+done ----- note that have used case folding --- all lower case
+look at byte pair encoding instead of the porter stemmer?
+def read this chapter:
+    https://web.stanford.edu/~jurafsky/slp3/2.pdf
+
+Look into viterbi algorithm and see if it is useful
+
+Could train the tokenizer on python files
+
+more data:
+currenlty                               8
+dad + oren                              2
+chase people who have said they will    8
+chase others?                           ?
+THG                                     5
+supervisors next term                   3
+redo it my self?                        1
+email companies?                        ?
+
+total                                   270
+
+priorities:
+1) data
+2) have a quick look into features specified above
+2) other systems specified by paula
+3) read J & M link:(https://web.stanford.edu/~jurafsky/slp3/) chapters:2√,3,7,9,12,17,20,22+ for hand crafting 11
+

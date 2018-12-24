@@ -36,8 +36,6 @@ tokens = [
     'OPEN_SQUARE',
     'CLOSE_SQUARE',
     'STRING_CONST',
-    'TRUE',
-    'FALSE'
 ]
 
 reserved = {
@@ -50,7 +48,9 @@ reserved = {
     'else' : 'ELSE',
     'and' : 'AND',
     'or' : 'OR',
-    'continue': 'CONTINUE'
+    'continue': 'CONTINUE',
+    'true': 'TRUE',
+    'false': 'FALSE'
 }
 
 
@@ -84,8 +84,6 @@ t_OPEN_CURL = r'\{'
 t_CLOSE_CURL = r'\}'
 t_OPEN_SQUARE = r'\['
 t_CLOSE_SQUARE = r'\]'
-t_TRUE = r'True'
-t_FALSE = r'False'
 t_ignore = ' '
 
 def t_STRING_CONST(t):

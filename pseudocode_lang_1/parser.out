@@ -64,7 +64,6 @@ Rule 58    value -> TRUE
 Rule 59    value -> FALSE
 Rule 60    value -> empty_list
 Rule 61    empty_list -> OPEN_SQUARE CLOSE_SQUARE
-Rule 62    store -> ID
 
 Terminals, with rules where they appear
 
@@ -89,7 +88,7 @@ FALSE                : 59
 FLOAT                : 54
 FOR                  : 17 18
 GTEQ                 : 34
-ID                   : 17 26 27 55 62
+ID                   : 17 26 27 55
 IF                   : 20 21
 IN                   : 17
 INT                  : 53
@@ -129,7 +128,6 @@ if_state             : 5
 return_state         : 4
 statement            : 1 18 18 18
 statements           : 1 25 0
-store                : 
 value                : 43
 while_state          : 7
 
