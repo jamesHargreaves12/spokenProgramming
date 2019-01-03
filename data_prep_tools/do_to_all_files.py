@@ -1,5 +1,6 @@
 import os
-import get_data
+from data_prep_tools import get_data
+
 base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
 
 

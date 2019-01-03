@@ -1,4 +1,5 @@
-import get_data
+from data_prep_tools import get_data
+
 
 def find_files(word):
     base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"

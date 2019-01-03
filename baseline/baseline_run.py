@@ -1,12 +1,14 @@
-from get_pseudocode_token_list import get_pseudocode_tokens
-import get_data
-import re
+from baseline.get_pseudocode_token_list import get_pseudocode_tokens
+from data_prep_tools import get_data
 from termcolor import colored
-import get_n_gram_reordering
-from minimum_edit_distance import minimum_edit_distance
+from baseline import get_n_gram_reordering
+from tools.minimum_edit_distance import minimum_edit_distance
 import math
-from matrix_to_image import show_heatmap
+from other.matrix_to_image import show_heatmap
 from nltk.stem import PorterStemmer
+
+stemmer = PorterStemmer()
+
 
 def print_coloured_changes(removed,mapped,orig_tokens):
     print_text = ""
@@ -29,8 +31,6 @@ def print_coloured_changes(removed,mapped,orig_tokens):
     print(print_text)
 
 
-stemmer = PorterStemmer()
-
 def is_first_token_equal_stem(transcript_words, token_identifier, start_index):
     global stemmer
     tok_words = token_identifier.split(" ")
@@ -47,7 +47,7 @@ def is_first_token_equal_no_stem(transcript_words, token_identifier, start_index
     return True
 
 
-def transcript_to_code_tokens(transcript, token_map):
+def transcript_to_code_tokens(transcript, token_map, stem_flag):
     transcript_tokens = [x for x in transcript.split(" ") if not x == ""]
     orig_tokens = transcript_tokens[:]
     removed = []
@@ -58,7 +58,8 @@ def transcript_to_code_tokens(transcript, token_map):
         longest_tok = ""
         length_longest_tok = 0
         for tok in token_map.keys():
-            if is_first_token_equal_no_stem(transcript_tokens, tok, cur_index):
+            if stem_flag and is_first_token_equal_stem(transcript_tokens, tok, cur_index) \
+                    or (not stem_flag) and is_first_token_equal_no_stem(transcript_tokens, tok, cur_index):
                 length_tok = len(tok.split(" "))
                 if length_tok > length_longest_tok or length_tok == length_longest_tok and transcript_tokens[cur_index:cur_index+length_tok] == tok.split(" "):
                     length_longest_tok = length_tok
@@ -75,7 +76,7 @@ def transcript_to_code_tokens(transcript, token_map):
             print_coloured_changes(removed, mapped, orig_tokens)
             return [x for x in result if x != "NOT_A_TOKEN"]
 
-def baseline():
+def baseline(stem_flag):
     pseudocode_tokens = get_pseudocode_tokens()
     transcripts_simplified = get_data.get_data_from_directory("/transcripts_var_replaced/")
     truth = get_data.get_data_from_directory("/pseudocode_simplified/")
@@ -85,19 +86,23 @@ def baseline():
     for n in range(1,7):
         cur_scores = []
         for t in range(0, 15):
-            with_reordering_distance = []
+            distances = []
+            errors = []
             for i in range(len(transcripts_simplified)):
-                print()
-                print(i)
+                # print()
+                # print(i)
                 transcript = transcripts_simplified[i]
-                only_posible_tokens = transcript_to_code_tokens(transcript.strip("\n"),pseudocode_tokens)
-                pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering(only_posible_tokens,n,t)
+                only_posible_tokens = transcript_to_code_tokens(transcript.strip("\n"), pseudocode_tokens, stem_flag)
+                pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering(only_posible_tokens, n, t)
                 reordered = [x for x in pseudocode_attempt.split(" ") if not x == ""]
                 actual = [x for x in truth[i].split(" ") if not x == ""]
-                with_reordering_distance.append(minimum_edit_distance(reordered,actual))
-            total_distance = sum(with_reordering_distance)
+                edit_distance = minimum_edit_distance(reordered,actual)
+                distances.append(edit_distance)
+                errors.append(edit_distance/len(actual))
+            total_distance = sum(distances)
+            print(errors)
             print("n = " + str(n) + " t = "+ str(t) + " score ==     " + str(total_distance))
-            print(with_reordering_distance)
+            print(distances)
             best_score = min(best_score,total_distance)
             cur_scores.append(total_distance)
         scores.append(cur_scores)
@@ -107,4 +112,4 @@ def baseline():
 
     # for small dataset 80 - does best when no reordering ie data set is clearly too small
 
-baseline()
+baseline(stem_flag=False)

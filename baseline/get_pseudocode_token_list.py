@@ -1,13 +1,12 @@
-import os
 import csv
 import re
-import get_data
+from data_prep_tools import get_data
 
 
 def get_programming_symbols_map():
     # source = https://blog.codinghorror.com/ascii-pronunciation-rules-for-programmers/
     symbol_to_name = {}
-    with open("programming_symbols.csv", "r") as csvfile:
+    with open("data/programming_symbols.csv", "r") as csvfile:
         csvfile.readline()
         rows = csv.reader(csvfile, delimiter=",")
         current_symbol = ""

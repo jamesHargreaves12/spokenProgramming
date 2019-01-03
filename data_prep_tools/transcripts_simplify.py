@@ -1,4 +1,4 @@
-from do_to_all_files import do_to_all_files
+from data_prep_tools.do_to_all_files import do_to_all_files
 import re
 
 def variable_transform(transcript_data, variable_data):

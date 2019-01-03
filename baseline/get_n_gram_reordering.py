@@ -1,4 +1,4 @@
-import get_data
+from data_prep_tools import get_data
 from collections import defaultdict
 from itertools import permutations
 

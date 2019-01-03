@@ -33,6 +33,16 @@ look at byte pair encoding instead of the porter stemmer?
 def read this chapter:
     https://web.stanford.edu/~jurafsky/slp3/2.pdf
 
+In alignment look at mapping some tokens deterministically such as variable
+
+improve the get_alignment function in file ibmmodel1
+clean up project files
+might be worth splitting up transcript/pseudocode into terms for word alignment
+---> also changing how variables work
+
+
+in SMT if word maps to VARIABLE and it is not VARIABLE then set to next best / NULL
+
 Look into viterbi algorithm and see if it is useful
 
 Could train the tokenizer on python files

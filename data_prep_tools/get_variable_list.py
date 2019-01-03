@@ -1,30 +1,6 @@
 from pseudocode_lang_1 import pseudo_lex
-import os
-from do_to_all_files import do_to_all_files
+from data_prep_tools.do_to_all_files import do_to_all_files
 base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
-
-# dir = "1/"
-# filename = "546984.txt"
-# pseudocode_file = base_dir + dir + "pseudocode/"+ filename
-# variable_file = base_dir + dir + "variable_list/"+ filename
-# pseudocode_data = ""
-# variable_data = ""
-# with open(pseudocode_file,'r') as pseudocode:
-#     pseudocode_data = pseudocode.read()
-# with open(variable_file, 'r') as variable:
-#     variable_data = variable.read()
-#
-# pseudo_lex.lexer.input(pseudocode_data)
-# variable_list = []
-# while True:
-#     tok = pseudo_lex.lexer.token()
-#     if not tok:
-#         break
-#     if tok.type == "ID":
-#         var = tok.value.replace("_", " ")
-#         if var not in variable_list:
-#             variable_list.append(var)
-# print(variable_list)
 
 
 def transform(data):

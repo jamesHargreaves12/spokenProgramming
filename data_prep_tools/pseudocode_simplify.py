@@ -1,5 +1,4 @@
-from nltk.corpus import treebank
-from do_to_all_files import do_to_all_files
+from data_prep_tools.do_to_all_files import do_to_all_files
 import re
 from pseudocode_lang_1 import pseudo_yacc
 
