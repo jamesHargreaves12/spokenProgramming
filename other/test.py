@@ -173,3 +173,27 @@ a.remove(3)
 print(b.append(3))
 print(a)
 print(b)
+
+n=7
+prefix = tuple(["<s>"]*(-1))
+print(prefix)
+print(str(["1"]))
+
+
+print(type(defaultdict(int)))
+
+
+a= [[["sdfsd"],"sdf"],2,3,4]
+b= [["sdfsd","dsf"],6,7]
+for x in zip(a,b):
+    print(x)
+
+
+x = defaultdict(int)
+print(x.default_factory())
+
+
+ticked = [0 for _ in range(10)]
+ticked[3:5] = [1]*2
+print(ticked)
+print(len(ticked))

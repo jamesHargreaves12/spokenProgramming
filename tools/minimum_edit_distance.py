@@ -31,7 +31,7 @@ def minimum_edit_distance(source,target,penalty_functions=levenshtein_distance):
 
 if __name__ == "__main__":
     modified_levenshtein_distance = (lambda x:1,lambda y:1,lambda x,y: 0 if x == y else 1)
-    print(minimum_edit_distance([x for x in"execution"],[y for y in "intention"],modified_levenshtein_distance))
+    print(minimum_edit_distance([x for x in "execution"],[y for y in "intention"],modified_levenshtein_distance))
 
     transcript = "VARIABLE * NUMBER * NUMBER".split()
     pseudocode = "VARIABLE * NUMBER * NUMBER".split()
@@ -40,3 +40,7 @@ if __name__ == "__main__":
     transcript = "EMPTY_LIST VARIABLE for VARIABLE in VARIABLE if VARIABLE > FUNCTION_CALL VARIABLE VARIABLE for VARIABLE return VARIABLE".split()
     pseudocode = "VARIABLE = EMPTY_LIST for VARIABLE in VARIABLE if VARIABLE > VARIABLE FUNCTION_CALL VARIABLE VARIABLE return VARIABLE".split()
     print(minimum_edit_distance(transcript,pseudocode))
+
+    transcript_convert = "VARIABLE return VARIABLE VARIABLE = VARIABLE * NUMBER * NUMBER".split(" ")
+    pseudocode = "VARIABLE = VARIABLE * NUMBER VARIABLE = VARIABLE * NUMBER return VARIABLE".split(" ")
+    print(minimum_edit_distance(transcript_convert,pseudocode))

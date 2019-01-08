@@ -36,10 +36,18 @@ def read this chapter:
 In alignment look at mapping some tokens deterministically such as variable
 
 improve the get_alignment function in file ibmmodel1
-clean up project files
+DONE - clean up project files
 might be worth splitting up transcript/pseudocode into terms for word alignment
 ---> also changing how variables work
 
+improve language model for partialy translated bits
+    e.g. do prune search
+    try 0 context search
+lots of probabilty need to convert to logs
+
+addapt decoder to require a end of file token
+
+prune phrase table
 
 in SMT if word maps to VARIABLE and it is not VARIABLE then set to next best / NULL
 
