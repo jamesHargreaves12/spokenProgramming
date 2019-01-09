@@ -55,6 +55,14 @@ Look into viterbi algorithm and see if it is useful
 
 Could train the tokenizer on python files
 
+converting to log - using just log
+
+Thoughts about simplistic IBM Model 1:
+    - oversimplification has issues:
+        - multiple tokens will map to the same one - multiply by and * occurs twice will always map to second one
+        - Variables map to null
+
+
 more data:
 currenlty                               8
 dad + oren                              2

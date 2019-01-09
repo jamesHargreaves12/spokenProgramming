@@ -6,6 +6,12 @@ import matplotlib.pyplot as plt
 from nltk.stem import PorterStemmer
 from termcolor import colored,cprint
 import math
+import time
+import random
+from heapq import heappush, heappushpop
+import threading
+import multiprocessing
+from math import exp,log
 # tokens = {'multiplied by': '*', 'i': 'i', 'FUNCTION_CALL': 'FUNCTION_CALL', 'for': 'for', 'out': '>', 'zap': '>', 'tac': '>', 'write to': '>', 'right angle': '>', 'gozinta': '>', 'right broket': '>', 'ket': '>', 'greater than': '>', 'into (or towards)': '>', 'blow': '>', 'right angle bracket': '>', 'plus': '+', 'intersection': '+', 'cross': '+', 'add': '+', 'left bracket': '[', 'bracket': '[', 'u turn turn back': '[', 'left square bracket': '[', 'opening bracket': '[', 'square': '[', 'right bracket': ']', 'unbracket': ']', 'u turn back': ']', 'right square bracket': ']', 'closing bracket': ']', 'unsquare': ']', 'newline': '\\n', 'backslash n': '\\n', 'in': '<', 'star': '*', 'asterisk': '*', 'glob': '*', 'wildcard': '*', 'aster': '*', 'Nathan Hale': '*', 'spider': '*', 'splat': '*', 'dingle': '*', 'twinkle': '*', 'gear': '*', 'mult': '*', 'times': '*', 'spider aster': '*', 'return': 'return', 'fizz': 'fizz', 'while': 'while', '0.2': '0.2', 'if': 'if', 'half-mesh': '=', 'equals': '=', 'quadrathorpe': '=', 'gets': '=', 'takes': '=', 'already': ')', 'right': ')', 'closing parenthesis': ')', 'close paren': ')', 'rparen': ')', 'closing round bracket': ')', 'right paren': ')', 'unparenthisey': ')', 'close': ')', 'thesis': ')', 'right ear': ')', 'wane': ')', 'right round bracket': ')', 'right parenthesis': ')', '100': '100', 'buzz': 'buzz', '1.1': '1.1', 'else': 'else', 'VARIABLE': 'VARIABLE', 'double-oh-seven': '%', 'grapes': '%', 'percent sign': '%', 'mod': '%', 'true': 'true', 'two-spot': ':', 'colon': ':', 'dots': ':', '1.2': '1.2', 'pretzel': '&', 'amper': '&', 'and sign': '&', 'reference': '&', 'amp': '&', 'ampersand': '&', 'address': '&', 'bitand': '&', 'and': 'and', 'background': '&', 'andpersand': '&', 'quotation marks': '"', 'double quote': '"', 'dirk': '"', 'rabbit-ears': '"', 'quote': '"', 'dirk rabbit-ears': '"', 'double-glitch': '"', 'double prime': '"', 'dieresis': '"', 'literal mark': '"', 'n': 'n', '9': '9', '1': '1', 'continue': 'continue', '20': '20', 'full stop': '.', 'decimal point': '.', 'spot': '.', 'dot': '.', 'point': '.', 'radix point': '.', 'period': '.', '2': '2', '5': '5', 'hyphen': '-', 'minus': '-', 'bithorpe': '-', 'worm': '-', 'option': '-', 'dak': '-', 'dash': '-', 'or': 'or', 'so': '(', 'left': '(', 'opening parenthesis': '(', 'open paren': '(', 'lparen': '(', 'opening round bracket': '(', 'left paren': '(', 'parenthisey': '(', 'open': '(', 'paren': '(', 'left ear': '(', 'wax': '(', 'left round bracket': '(', 'left parenthesis': '(', '21': '21', 'false': 'false', 'crunch': '<', 'tic': '<', 'read from to': '<', 'left angle': '<', 'comes-from': '<', 'left broket': '<', 'bra': '<', 'less than': '<', 'from (or towards)': '<', 'suck': '<', 'left angle bracket': '<', '11': '11', '3': '3', 'soldier': '!', 'excl': '!', 'factorial': '!', 'exclam': '!', 'wow': '!', 'eureka': '!', 'not': '!', 'bang': '!', 'spark-spot': '!', 'wham': '!', 'pling': '!', 'boing': '!', 'smash': '!', 'yell': '!', 'exclamation mark': '!', 'hey': '!', 'control': '!', 'shriek': '!', 'cuss': '!', 'stroke': '/', 'diagonal': '/', 'slash': '/', 'solidus': '/', 'over': '/', 'slant': '/', 'forward slash': '/', 'virgule': '/', 'slak': '/', 'slat': '/', 'u': 'u', '0': '0', '0.1': '0.1'}
 # string = "VARIABLE equals VARIABLE multiplied by 1.2 then VARIABLE equals VARIABLE multiplied by 1.1 then return VARIABLE"
 # cur_index = 0
@@ -140,60 +146,57 @@ def increment_alignment_with_count(i,alignment_mapping, counts):
     counts[alignment_mapping[i]-1] -= 1
     counts[alignment_mapping[i]] += 1
 
-# a = [0,0,0]
-# c = [3,0,0]
-# for i in range(27):
-#     increment_alignment_with_count(0, a, c)
-#     count = [0,0,0]
-#     for x in a:
-#         count[x] += 1
-#     print(a,c)
-#     print(count == c)
-
-# a = [""]
-# c = [1, 0, 0, 4]
-# # for i in range(27):
-# increment_alignment_with_count(1, a, c)
-# print(a,c)
-x = 0
-total = defaultdict(lambda:x)
-x= 1
-print(total[1])
-# total["a"] = 2
-# prob_dist = {}
-# for x in total.keys():
-#     prob_dist[x] =5
-# print(prob_dist["a"])
-
-a = set([1,2,3])
-b= list(a)
-b.append(4)
-a.remove(3)
-
-print(b.append(3))
-print(a)
-print(b)
-
-n=7
-prefix = tuple(["<s>"]*(-1))
-print(prefix)
-print(str(["1"]))
+# randsx = [random.random() for _ in range(1000000)]
+# randsy = [random.random() for _ in range(1000000)]
+# start = time.time()
+# for x,y in zip(randsx,randsy):
+#     a = max(x,y)
+# print(time.time()-start)
+#
+# start = time.time()
+# for x,y in zip(randsx,randsy):
+#     a = x if x > y else y
+# print(time.time()-start)
 
 
-print(type(defaultdict(int)))
+def add_to_hypothesis_stack(stack,item):
+    cost = item
+    if len(stack) >= 6:
+        if cost <= stack[0]:
+            # this item is worse than all the items on the stack so do nothing
+            return
+        else:
+            # add the item to the stack and then pop the worst
+            heappushpop(stack,item)
+    else:
+        heappush(stack,item)
 
 
-a= [[["sdfsd"],"sdf"],2,3,4]
-b= [["sdfsd","dsf"],6,7]
-for x in zip(a,b):
-    print(x)
+def transform(x):
+    for i in range(1000):
+        y = exp(log(exp(log(exp(log(pow(x,3.23)))))))
+    return x
 
 
-x = defaultdict(int)
-print(x.default_factory())
+def transform_and_append(x,output_list):
+    output_list.append(transform(x))
+# input_list = [random.random() for _ in range(10000)]
+# output_list =[]
+# start = time.time()
+# for x in input_list:
+#     output_list.append(transform(x))
+# print("Single Worker", time.time()-start)
 
+input_list = [random.random() for _ in range(10000)]
+output_list =[]
+start = time.time()
+pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
+for i in input_list:
+    pool.apply_async(func=transform_and_append,args=(i,output_list))
+pool.close()
+pool.join()
+print(len(output_list))
+print("Pooled Workers",time.time()- start)
 
-ticked = [0 for _ in range(10)]
-ticked[3:5] = [1]*2
-print(ticked)
-print(len(ticked))
+transform_and_append(3,output_list)
+print(output_list)
