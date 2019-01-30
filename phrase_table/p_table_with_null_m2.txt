@@ -1,0 +1,11 @@
+Default = 0.0
+********** f = return VARIABLE_0 times NUMBER times NUMBER
+return VARIABLE_0 * NUMBER * NUMBER: 1.0
+********** f = VARIABLE_0 multiplied by NUMBER multiplied by NUMBER
+VARIABLE_0 * NUMBER * NUMBER: 1.0
+********** f = return FUNCTION_CALL_3 VARIABLE_0 using the plus function
+return FUNCTION_CALL_3 VARIABLE_0 VARIABLE_1: 1.0
+********** f = set VARIABLE_0 to NUMBER
+VARIABLE_0 = NUMBER: 1.0
+********** f = for each VARIABLE_0 between NUMBER and NUMBER FUNCTION_CALL_3 VARIABLE_0 and end the loop
+for VARIABLE in FUNCTION_CALL_2 NUMBER NUMBER FUNCTION_CALL_3 VARIABLE_0: 1.0

@@ -24,6 +24,9 @@ def transform(data):
         else:
             tok = pseudo_lex.lexer.token()
     variable_list = sorted(variable_list,key=lambda variable: len(variable),reverse=True)
-    return "\n".join(variable_list) + '\n*********\n' + '\n'.join(fun_list)
+    if fun_list:
+        return "\n".join(variable_list) + '\n*********\n' + '\n'.join(fun_list)
+    else :
+        return "\n".join(variable_list)+ '\n*********'
 
 do_to_all_files(input_dir1="pseudocode", input_dir2=None, output_dir="variable_list", transform=transform)

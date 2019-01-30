@@ -1,6 +1,8 @@
+import ibmmodel2
+
 from data_prep_tools import get_data
 import ibmmodel1
-
+import ibm_models
 
 def print_alignment(align,max_e,max_f):
     for e in range(max_e):
@@ -21,22 +23,16 @@ for i,pseudo in enumerate(pseudocode):
     tokenized_transcripts.append([y.strip("\n") for y in transcripts[i].split(" ") if y != ""])
 
 sentance_pairs = list(zip(tokenized_transcripts,tokenized_pseudocode))
+# print(sentance_pairs[0][0])
+# print(sentance_pairs[1][0])
+# print(sentance_pairs[2][0])
+# print(sentance_pairs[3][0])
+# print(sentance_pairs[4][0])
+# p_table1 = ibmmodel1.get_phrase_table_m1(sentance_pairs)
+p_table2 = ibmmodel2.get_phrase_table_m2(sentance_pairs,100,100,null_flag=False)
+ibm_models.prune_phrase_table(p_table2,e_max_length=9,f_max_length=15)
 
-p_to_e = ibmmodel1.train(sentance_pairs, 1000)
-reversed = [(x, y) for y, x in sentance_pairs]
-e_to_p = ibmmodel1.train(reversed, 1000)
-# alignments = [ibmmodel1.get_phrase_alignment(p_to_e, e_to_p, es, ps,null_flag=True) for es, ps in sentance_pairs]
-# source = "take the VARIABLE and multiply it by NUMBER get the VARIABLE multiply VARIABLE by NUMBER to get the VARIABLE and return the VARIABLE".split(" ")
-# for i,es_ps in enumerate(sentance_pairs):
-#     es = es_ps[0]
-#     if source == es:
-#         print(es)
-#         print_alignment(alignments[i],len(source),12)
-#         print()
-#
-# phrase_table = ibmmodel1.get_phrase_probabilities(alignments, sentance_pairs,null_flag=True)
-# # ibmmodel1.prune_phrase_table(phrase_table,6)
-# ibmmodel1.save_phrase_table(phrase_table,"phrase_table.txt")
-#
-# log_phrase_table = ibmmodel1.get_log_phrase_table(phrase_table)
-# ibmmodel1.save_phrase_table(log_phrase_table,"log_phrase_table.txt")
+ibm_models.save_phrase_table(p_table2,"p_table_m2.txt")
+
+# log_phrase_table = ibm_models.get_log_phrase_table(p_table2)
+# ibm_models.save_phrase_table(log_phrase_table,"log_new_var_id_phrase_table_m1.txt")

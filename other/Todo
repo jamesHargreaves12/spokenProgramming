@@ -30,7 +30,7 @@ DONE ----- lemmatization and stemming ect
 normalization relevant?
 done ----- note that have used case folding --- all lower case
 look at byte pair encoding instead of the porter stemmer?
-def read this chapter:
+DONE ----- def read this chapter:
     https://web.stanford.edu/~jurafsky/slp3/2.pdf
 
 In alignment look at mapping some tokens deterministically such as variable
@@ -45,7 +45,7 @@ improve language model for partialy translated bits
     try 0 context search
 lots of probabilty need to convert to logs
 
-addapt decoder to require a end of file token
+adapt decoder to require a end of file token
 
 prune phrase table
 
@@ -55,13 +55,14 @@ Look into viterbi algorithm and see if it is useful
 
 Could train the tokenizer on python files
 
-converting to log - using just log
+DONE --- converting to log - using just log
 
 Thoughts about simplistic IBM Model 1:
     - oversimplification has issues:
         - multiple tokens will map to the same one - multiply by and * occurs twice will always map to second one
         - Variables map to null
 
+IBM_MODEL2 null maps to start words with high likely hood and so set its mu for d to be in a random place on each loop?
 
 more data:
 currenlty                               8

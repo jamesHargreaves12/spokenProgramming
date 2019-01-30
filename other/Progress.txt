@@ -1,0 +1,52 @@
+Data Prep:
+All data is transcribed (initally using online software then correcterd)
+Then unambiguos pseudocode language define and lexer/parser produced
+Manually wrote the pseudocode which best matched the transcripts.
+
+Then I wrote transformation for the transcripts which were:
+- replacing all numbers with a NUMBER tag
+- replacing all variables with a VARIABLE tag
+- replacing all function calls with FUNCTION_CALL tag
+****** change these to make it unique
+
+The pseudocode was transformed to:
+- remove brakets
+- replaces variables,numbers,functions as above
+
+Both of these were done programatically since variables names ect could be infered by parsing the pseudocode
+
+Baseline:
+I produced a list of mappings of transcript words to functional words using the list of mappings at https://blog.codinghorror.com/ascii-pronunciation-rules-for-programmers/
+plus manual additions were it seemed obvious (this seems like bad science)
+this mapping was from name of symbol (possibly multiple words) to pseudocode token
+
+The simplified transcripts were the processed to remove all words which were processed as follows:
+From the start of the file we found the longest prefix which matched to the name of the symbol (I included a stem flag which would determin wether the match was done on stemmed versions of the words or not). If one was found then we outputted the equivalent pseudocode token other wise we removed the first word of the file and continued.
+We then produced an n_gram model of the pseudocode language and used this to reodred the language by walking along the possible pseudocode from the previous solution and then walking along the file using a window of size n and outputting the most likely ordering of those n tokens.
+However, I found that a window of size 1 worked best (ie no reordering) which is probally caused by a lack of data.
+
+SMT:
+First thing we did was create an n-gram language model with laplace smoothing.
+We then had to compute word-alignment using algorithm here: http://mt-class.org/jhu/slides/lecture-ibm-model1.pdf slide 32 (the "until convergence" was replaced using a high value of n) (IBMModel1)
+We computed the most likely word alignment for english->pseudocode and pseudocode->english using the algorithm specified here: http://ivan-titov.org/teaching/elements.ws13-14/elements-7.pdf
+we used these word aligments to find the phrase alignments for a given sentance using the algorithm specified here:  Philip Koehn's Statistical MT book, pp. 133
+I used these to construct a phrase table with probabiltiies
+Finally I built a decoder which used the beam search decoder specified on page 908 of J&M 2 edition.
+    - new hypes were found by looking at all possible english phrases which were still possible and filtering by if they were in the phrase table.
+    - future cost was calculated by for each string of english words (this is easier explained with a diagram but basically you split on already translated words) computing the table found here: http://www.statmt.org/book/slides/06-decoding.pdf slide 28
+        note currently this step only uses phrase translation probabilities I would like to experiment using some context free language model as this is what many of the translators do.
+    - cur_cost was calcultated using distortion_probability*lang_model_prob*translation_prob*short_sentance_discounting as explained in http://www.statmt.org/book/slides/06-decoding.pdf slide 7 combined with J&M 2nd edition page 908
+    - The beam search was handled using heaps which if the size of the heap grew beyond n (initially set to 1000) then they popped the highest cost off the stack.
+
+I have methods for prunning the phrase table set up.
+I have also setup the same system but using IBMModel2 to compute the word alignment rather then IBMModel1 using the initial distribution of the normal distribution
+
+Speedups (initially it took about 60mins to translate 1 sentance - I got this down to about 15secs):
+Using logs for all the probabilities
+caching the future cost calculations
+not computing the new current_cost if old current_cost*future_cost took over threshold probability.
+rather than recalculating all of current_cost each time only calculating the cost of adding the new phrase.
+reducing the amount of list comprehension and other expensive python operation (e.g. caching len(list)calls).
+storing minimal information in the stack to reduce amount of writes to memory
+
+
