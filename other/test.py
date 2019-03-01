@@ -12,6 +12,7 @@ from heapq import heappush, heappushpop
 import threading
 import multiprocessing
 from math import exp,log
+import os
 # tokens = {'multiplied by': '*', 'i': 'i', 'FUNCTION_CALL': 'FUNCTION_CALL', 'for': 'for', 'out': '>', 'zap': '>', 'tac': '>', 'write to': '>', 'right angle': '>', 'gozinta': '>', 'right broket': '>', 'ket': '>', 'greater than': '>', 'into (or towards)': '>', 'blow': '>', 'right angle bracket': '>', 'plus': '+', 'intersection': '+', 'cross': '+', 'add': '+', 'left bracket': '[', 'bracket': '[', 'u turn turn back': '[', 'left square bracket': '[', 'opening bracket': '[', 'square': '[', 'right bracket': ']', 'unbracket': ']', 'u turn back': ']', 'right square bracket': ']', 'closing bracket': ']', 'unsquare': ']', 'newline': '\\n', 'backslash n': '\\n', 'in': '<', 'star': '*', 'asterisk': '*', 'glob': '*', 'wildcard': '*', 'aster': '*', 'Nathan Hale': '*', 'spider': '*', 'splat': '*', 'dingle': '*', 'twinkle': '*', 'gear': '*', 'mult': '*', 'times': '*', 'spider aster': '*', 'return': 'return', 'fizz': 'fizz', 'while': 'while', '0.2': '0.2', 'if': 'if', 'half-mesh': '=', 'equals': '=', 'quadrathorpe': '=', 'gets': '=', 'takes': '=', 'already': ')', 'right': ')', 'closing parenthesis': ')', 'close paren': ')', 'rparen': ')', 'closing round bracket': ')', 'right paren': ')', 'unparenthisey': ')', 'close': ')', 'thesis': ')', 'right ear': ')', 'wane': ')', 'right round bracket': ')', 'right parenthesis': ')', '100': '100', 'buzz': 'buzz', '1.1': '1.1', 'else': 'else', 'VARIABLE': 'VARIABLE', 'double-oh-seven': '%', 'grapes': '%', 'percent sign': '%', 'mod': '%', 'true': 'true', 'two-spot': ':', 'colon': ':', 'dots': ':', '1.2': '1.2', 'pretzel': '&', 'amper': '&', 'and sign': '&', 'reference': '&', 'amp': '&', 'ampersand': '&', 'address': '&', 'bitand': '&', 'and': 'and', 'background': '&', 'andpersand': '&', 'quotation marks': '"', 'double quote': '"', 'dirk': '"', 'rabbit-ears': '"', 'quote': '"', 'dirk rabbit-ears': '"', 'double-glitch': '"', 'double prime': '"', 'dieresis': '"', 'literal mark': '"', 'n': 'n', '9': '9', '1': '1', 'continue': 'continue', '20': '20', 'full stop': '.', 'decimal point': '.', 'spot': '.', 'dot': '.', 'point': '.', 'radix point': '.', 'period': '.', '2': '2', '5': '5', 'hyphen': '-', 'minus': '-', 'bithorpe': '-', 'worm': '-', 'option': '-', 'dak': '-', 'dash': '-', 'or': 'or', 'so': '(', 'left': '(', 'opening parenthesis': '(', 'open paren': '(', 'lparen': '(', 'opening round bracket': '(', 'left paren': '(', 'parenthisey': '(', 'open': '(', 'paren': '(', 'left ear': '(', 'wax': '(', 'left round bracket': '(', 'left parenthesis': '(', '21': '21', 'false': 'false', 'crunch': '<', 'tic': '<', 'read from to': '<', 'left angle': '<', 'comes-from': '<', 'left broket': '<', 'bra': '<', 'less than': '<', 'from (or towards)': '<', 'suck': '<', 'left angle bracket': '<', '11': '11', '3': '3', 'soldier': '!', 'excl': '!', 'factorial': '!', 'exclam': '!', 'wow': '!', 'eureka': '!', 'not': '!', 'bang': '!', 'spark-spot': '!', 'wham': '!', 'pling': '!', 'boing': '!', 'smash': '!', 'yell': '!', 'exclamation mark': '!', 'hey': '!', 'control': '!', 'shriek': '!', 'cuss': '!', 'stroke': '/', 'diagonal': '/', 'slash': '/', 'solidus': '/', 'over': '/', 'slant': '/', 'forward slash': '/', 'virgule': '/', 'slak': '/', 'slat': '/', 'u': 'u', '0': '0', '0.1': '0.1'}
 # string = "VARIABLE equals VARIABLE multiplied by 1.2 then VARIABLE equals VARIABLE multiplied by 1.1 then return VARIABLE"
 # cur_index = 0
@@ -46,7 +47,9 @@ def mode(a):
     numeral = list(set(numeral))
     numeral.sort(key=lambda x:x[0], reverse=True)
     return(numeral[0][1])
-
+x = []
+x.insert(1,"a")
+print(x)
 # data = sorted(data)
 # print(data)
 # histogram = plt.hist(data,bins=20)
@@ -187,16 +190,83 @@ def transform_and_append(x,output_list):
 #     output_list.append(transform(x))
 # print("Single Worker", time.time()-start)
 
-input_list = [random.random() for _ in range(10000)]
-output_list =[]
-start = time.time()
-pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-for i in input_list:
-    pool.apply_async(func=transform_and_append,args=(i,output_list))
-pool.close()
-pool.join()
-print(len(output_list))
-print("Pooled Workers",time.time()- start)
+# input_list = [random.random() for _ in range(10000)]
+# output_list =[]
+# start = time.time()
+# pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
+# for i in input_list:
+#     pool.apply_async(func=transform_and_append,args=(i,output_list))
+# pool.close()
+# pool.join()
+# print(len(output_list))
+# print("Pooled Workers",time.time()- start)
+#
+# transform_and_append(3,output_list)
+# print(output_list)
+#
+# base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
+# dir_names = ["audio","transcripts","pseudocode","transcripts_var_replaced","pseudocode_simplified","variable_list"]
+# for i in range(1, 17):
+#     dir = base_dir + str(i)
+#     if not(os.path.exists(dir)):
+#         os.mkdir(dir)
+#     for name in dir_names:
+#         os.mkdir(dir+"/"+name)
 
-transform_and_append(3,output_list)
-print(output_list)
+#
+# test = "asf's"
+# test = re.sub(r"([a-z]?)'([a-z]?)",r"\1\2",test)
+#
+# # replacements = {r"([a-z]?)'([a-z]?)" : r"\1\2"}
+# print(test)
+# test = re.compile(r" \|([a-z+0-9_]+?):([0-9]+?)_([A-Z0-9]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z0-9]+?)\| [_]?\)\n")
+# test = re.compile(r"\(\|([a-z]+?)\|( _| \|[a-z]+\|){0,1} \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
+# test = re.compile(r"\(\|([a-z]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\|\)\n")
+
+# test = re.compile(r"\(\|([a-z0-9]+?)\|( _| \|[a-z]+\|){0,1} \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
+
+test = re.compile(r"\(\|([a-z0-9_]+?)\|(?: _| \|[a-z]+\|){0,1}(?: \|(?:[a-z+0-9_]+):(?:[0-9]+)_(?:[A-Z&0-9]+)\|){0,1} \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
+
+# test = re.compile(r"\(\|([a-z]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\|\)\n")
+
+# test = re.compile(r"\|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\|")
+str1 = r'''(|ncsubj| |equal+s:1_VVZ| |variable_1:0_NP1| _)
+'''
+str2 = r'''(|dobj| |time+s:3_VVZ| |number:4_NN1|)
+'''
+str3 = r'''(|ncsubj| |equal+s:6_VVZ| |variable_2:5_NP1| _)
+'''
+str4 = r'''(|ncmod| _ |return:14_VV0| |then:13_RR|)
+'''
+str5 = r'''(|passive| |name+ed:10_VVN|)
+'''
+str6 = r'''(|ncsubj| |name+ed:10_VVN| |variable:9_NN1| |obj|)
+'''
+str7 = r'''(|ncmod| |num| |return:13_NN1| |next:12_MD|)
+'''
+str8 = r'''(|obj2| |add:4_VV0| |variable_1:11_&FO|)
+'''
+str9 = r'''(|ccomp| |that:35_CST| |store:34_NN1| |end:38_VV0|)
+'''
+str10 =r'''(|arg_mod| _ |be+s:11_VBZ| |where:9_RRQ|)
+'''
+
+strings = [str1,str2,str3,str4,str5,str6,str7,str8,str9,str10]
+for str in strings:
+    print(test.match(str))
+
+print()
+print()
+
+print(test.match(str1)[1] == 'ncsubj')
+print(test.match(str1)[2] == 'equal+s')
+print(test.match(str1)[3] == '1')
+print(test.match(str1)[4] == 'VVZ')
+print(test.match(str1)[5] == 'variable_1')
+print(test.match(str1)[6] == '0')
+print(test.match(str1)[7] == 'NP1')
+
+# for i in range(0,13):
+#     print(test.match(str1)[i])
+
+

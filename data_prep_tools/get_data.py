@@ -11,10 +11,12 @@ def get_data_from_directory(dir_name):
                 data.append(in_file.read())
     return data
 
-def get_file_map(dir_name):
+def get_file_map(dir_name,base=None):
+    if not base:
+        base = base_dir
     file_map = {}
     for i in range(1, 17):
-        dir = base_dir + str(i)
+        dir = base + str(i)
         trans_files = os.listdir(dir + "/" + dir_name)
         file_map[i] = trans_files
     return file_map

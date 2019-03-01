@@ -1,6 +1,6 @@
 import os
 
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
+base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
 
 transcript_count = 0
 response_id_to_count = {}

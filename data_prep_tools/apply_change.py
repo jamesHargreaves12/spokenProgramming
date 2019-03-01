@@ -2,8 +2,10 @@ import re
 from pseudocode_lang_1 import pseudo_yacc
 from data_prep_tools import get_data
 
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
+base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
 file_map = {}
+replacements = {r"([a-z]?)'([a-z]?)" : r"\1\2"}
+
 replacements = {"one hundred": "100",
                 "one": "1",
                 "two": "2",
@@ -17,10 +19,11 @@ replacements = {"one hundred": "100",
                 "nought": "0",
                 "naught": "0",
                 "eleven": "11",
+                "twelve": "12",
                 "zero": "0"}
-# replace 4 point 5 by 4.5
+# # # replace 4 point 5 by 4.5
 # replacements = {r"([0-9]+?) point ([0-9]+?)" : r"\1.\2"}
-# remove punctuation
+# # # remove punctuation
 # replacements = {r"([^0-9])\." : r"\1"}
 # replacements = {r"\.([^0-9])" : r"\1"}
 # replacements = {r"\.$" : r""}
@@ -29,7 +32,7 @@ replacements = {"one hundred": "100",
 # replacements = {r"(([a-z_]+)?)\.append\(((.*)?)\)": r"append(\3,\2)"}
 # replacements = {r" ([a-z]?)th ":r" \1 th "}
 
-file_map = get_data.get_file_map("transcripts")
+file_map = get_data.get_file_map("transcripts", base_dir)
 
 for current_dir in range(1, 17):
     print('')

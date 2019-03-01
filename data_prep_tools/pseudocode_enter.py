@@ -2,7 +2,7 @@ from tkinter import Tk,Text,Message, Button
 import os
 from pseudocode_lang_1 import pseudo_yacc
 
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
+base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
 file_map = {}
 
 current_dir = 0

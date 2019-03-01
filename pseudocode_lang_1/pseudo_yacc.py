@@ -224,7 +224,8 @@ errors = []
 
 def p_error(t):
     print(t)
-    errors.append("Syntax error at line {}, token = {}".format(t.lineno,t.type))
+    if t:
+        errors.append("Syntax error at line {}, token = {}".format(t.lineno,t.type))
 
 
 parser = yacc.yacc()
