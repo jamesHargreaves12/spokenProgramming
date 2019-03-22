@@ -1,7 +1,5 @@
 from collections import defaultdict
 from math import inf,log
-import test_models
-
 
 PREVENT_VARIABLE_TO_NULL_MAP = True
 

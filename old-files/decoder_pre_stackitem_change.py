@@ -1,8 +1,6 @@
-import math
 from heapq import heappop,heappush,heappushpop
-import ibmmodel1
-from faster_lang_model import LanguageModel
-from collections import defaultdict
+from smt import ibmmodel1
+from smt.faster_lang_model import LanguageModel
 import time
 from math import log,inf
 alpha = 0.7
@@ -251,7 +249,7 @@ if __name__ == "__main__":
     t_e_given_f = ibmmodel1.train(reversed, 100)
     alignments = [ibmmodel1.get_phrase_alignment(t_f_given_e, t_e_given_f, fs, es) for fs, es in sentance_pairs]
 
-    phrase_table = ibmmodel1.get_phrase_probabilities(alignments,sentance_pairs)
+    phrase_table = ibmmodel1.get_phrase_probabilities(alignments, sentance_pairs)
     log_phrase_table = ibmmodel1.get_log_phrase_table(phrase_table)
     lang_model = LanguageModel([e for _,e in sentance_pairs], n=2)
     # ibmmodel1.print_phrase_table(log_phrase_table)

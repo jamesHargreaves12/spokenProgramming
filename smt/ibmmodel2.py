@@ -1,15 +1,14 @@
 from collections import defaultdict
 from scipy.stats import norm
 from itertools import product
-import general
 from math import inf
-import ibmmodel1
-from types import FunctionType
-import time
-import ibm_models
-import test_models
+from smt import test_models, ibm_models, ibmmodel1
 
+
+D_SIGMA = lambda x: x/1.96
 d_cache = {}
+
+
 def load_d_cache():
     count = 0
     with open("default_d_cache/cache.txt","r") as file:
@@ -22,7 +21,6 @@ def load_d_cache():
             d_cache[(int(maps[0]),int(maps[1]),int(maps[2]),int(maps[3]))] = float(maps[4])
 
 
-D_SIGMA = lambda x: x/1.96
 load_d_cache()
 d_cache_file = open("default_d_cache/cache.txt","a")
 def default_d(i,j,l,m):
@@ -45,7 +43,7 @@ def default_d(i,j,l,m):
 
 def get_initial_t(sentance_pairs, m1_loop_count, null_flag=True):
     # probably would like to get this from a file for speed
-    return ibmmodel1.train(sentance_pairs,m1_loop_count,null_flag=null_flag)
+    return ibmmodel1.train(sentance_pairs, m1_loop_count, null_flag=null_flag)
 
 def d_fn(d_dict:dict,i,j,l,m):
     if((j,l,m) in d_dict and i in d_dict[(j,l,m)]):
@@ -121,7 +119,7 @@ def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filenam
         t = ibmmodel1.open_t(t_filename)
     else:
         t = get_initial_t(sentence_pairs, m1_loop_count, null_flag)
-        ibmmodel1.save_t(t,"t_2.txt")
+        ibmmodel1.save_t(t, "t_2.txt")
 
     print("Train IBM_M2")
     if null_flag:
@@ -217,10 +215,10 @@ def get_phrase_table_m2(sentence_pairs,m1_loop_count,m2_loop_count,null_flag=Tru
     # alignment =(get_phrase_alignment_2(t_e_given_f, d_e_given_f, t_f_given_e, d_f_given_e, test_pairs[1],test_pairs[0],null_flag))
 
     alignments = [get_phrase_alignment_2(t_e_given_f, d_e_given_f, t_f_given_e, d_f_given_e, es,fs,null_flag) for fs,es in sentence_pairs]
-    test_models.print_alignment([(y,x)  for x,y in alignments[test_index]],test_pairs)
-    print(ibm_models.get_phrases([(y,x) for x,y in alignments[test_index]],test_pairs[0],test_pairs[1]))
+    test_models.print_alignment([(y, x) for x, y in alignments[test_index]], test_pairs)
+    print(ibm_models.get_phrases([(y, x) for x, y in alignments[test_index]], test_pairs[0], test_pairs[1]))
     # print(ibm_models.get_phrases(alignments[test_index],test_pairs[0],test_pairs[1]))
-    return ibm_models.get_phrase_probabilities(alignments,sentence_pairs,null_flag=null_flag)
+    return ibm_models.get_phrase_probabilities(alignments, sentence_pairs, null_flag=null_flag)
 
 
 # sentence_pairs = general.get_sentance_pairs()

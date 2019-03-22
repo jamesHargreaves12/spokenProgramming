@@ -3,12 +3,13 @@ from collections import namedtuple,defaultdict
 from data_prep_tools.graph_funs import DependencyGraph
 
 Dependency = namedtuple('Dependency', 'type, head_val, head_position, head_type, dependent_val, dependent_position, dependent_type')
-tokens_re = re.compile(r"\|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\|")
+tokens_re = re.compile(r"\|([\'a-z+0-9_]+?):([0-9]+?)_(([A-Z&0-9]+?)|\$)\|")
 # OLD dependency_re = re.compile(r"\(\|([a-z0-9]+?)\|( _| \|[a-z]+\|){0,1} \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
-dependency_re = re.compile(r"\(\|([a-z0-9_]+?)\|(?: _| \|[a-z]+\|){0,1}(?: \|(?:[a-z+0-9_]+):(?:[0-9]+)_(?:[A-Z&0-9]+)\|){0,1} \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
+dependency_re = re.compile(r"\(\|([\'a-z+0-9_]+?)\|(?: _| \|[a-z]+\|){0,1}(?: \|(?:[\'a-z+0-9_]+):(?:[0-9]+)_(?:[A-Z&0-9]+)\|){0,1} \|([\'a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([\'a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
+
 dependency_extra_info_re = re.compile(r"\(\|([a-z]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\|\)\n")
 base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
-aritmetic_strings = ["plus","minus","time+s","multiply", "multiply+ed", "devide","divide+ed","add"]
+aritmetic_strings = ["subtract","plus","minus", "over", "time+s","multiply", "multiply+ed", "devide","divide+ed","add","percent"]
 
 # list of head token, tail token to types of relationship you want to combine
 # if list is empty then it will apply to all types of relationship
@@ -29,6 +30,57 @@ combine_mapping = {
     ("at","index"):[],
     ("for","in"):[],
 }
+
+# head, tail, start, end(non inclusive)
+combine_by_position_mapping = [
+    ("increment","by",1,4),
+    ("increment+s","by",1,3),
+    ("decrement+s","by",1,3),
+    ("decrement","by",1,4),
+    ("for", "in", 1,4),
+    ("add","to",1,4),
+    ("open", "bracket", 1, 2),
+    ("close", "bracket", 1, 2),
+    ("open", "parenthesis+s", 1, 2),
+    ("close", "parenthesis+s", 1, 2),
+    ("open", "parenthesis", 1, 2),
+    ("close", "parenthesis", 1, 2),
+    ("open", "bracket+s", 1, 2),
+    ("close", "bracket+s", 1, 2),
+    ("be+s", "equal", 1, 2),
+    ("plus", "equal",1,2),
+    ("plus", "plus",1,2),
+    ("equal+s", "equal+s",1,2),
+    ("minus", "minus",1,2),
+    ("and","then",1,2),
+    ("end", "for", 1, 3),
+    ("end", "if", 1, 3),
+    ("end", "while", 1, 3),
+    ("look+ing", "up", 1, 2),
+    ("look", "up", 1, 2),
+    ("less", "than", 1, 2),
+    ("be+s", "less than", 1, 2),
+    ("be+s less than", "or", 3, 4),
+    ("be+s less than or", "equal", 4, 5),
+    ("less than","or",2,3),
+    ("less than or","equal",3,4),
+    ("greater", "than", 1,2),
+    ("be+s", "greater",1,2),
+    ("be+s", "greater than", 1, 2),
+    ("greater than","or",2,3),
+    ("greater than or","equal",3,4),
+    ("be+s","greater than",1,2),
+    ("be+s greater than","or",3,4),
+    ("be+s greater than or","equal",4,5),
+    ("index+ed", "at", 1, 2),
+    ("smaller", "than", 1, 2),
+    ("not+", "equal", 1, 2),
+    ("increment+ing", "by", 1, 2),
+    ("bigger", "than", 1, 2),
+    ("be+s", "bigger than", 1, 2),
+    ("add", "and", 2, 4),
+    ("store", "that", 1, 2),
+]
 
 
 def get_token_deps():
@@ -255,8 +307,22 @@ def get_dependency_graph(labels, dependencies):
         head_pos = int(dep.head_position)
         dependent_pos = int(dep.dependent_position)
         dg.add_edge((head_pos,dependent_pos),dep.type)
+    dg.print_tokens()
     transform_dependency_graph(dg)
+    combine_by_postion(dg)
     return dg
+
+def combine_by_postion(graph:DependencyGraph):
+    for head_tk,tail_tk,start,end in combine_by_position_mapping:
+        head_orig_is = [x["orig_index"] for x in graph.get_verticies_by_token(head_tk)]
+        for head_og_i in head_orig_is:
+            head = graph.get_vertex_by_orig_index(head_og_i)
+            if head:
+                for i in range(start,end):
+                    pos_tl = graph.get_vertex_by_orig_index(head["orig_index"]+i)
+                    if pos_tl and pos_tl["token"] == tail_tk:
+                        head["token"] = head_tk + " " +  tail_tk
+                        graph.remove_vertex_with_child_promote(pos_tl)
 
 
 if __name__ == "__main__":

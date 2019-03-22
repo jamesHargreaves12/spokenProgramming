@@ -8,13 +8,25 @@ def variable_transform(transcript_data, variable_data):
         if variable == '':
             print("ISSUE")
             continue
-        elif variable == '*********':
+        elif variable == '*********' and replace_text == "VARIABLE_":
             replace_text = "FUNCTION_CALL_"
             continue
-        cur_replace_text = replace_text + str(index)
-        transcript_data = re.sub(r' '+variable+r'\s', " "+cur_replace_text+" ", transcript_data)
-        transcript_data = re.sub(r' '+variable+r'$', " "+cur_replace_text, transcript_data)
-        transcript_data = re.sub(r'^'+variable+r' ', cur_replace_text+" ", transcript_data)
+        elif variable == '*********' and replace_text == "FUNCTION_CALL_":
+            replace_text = "STR"
+            continue
+        elif variable == '*********':
+            print("ISSUE")
+        cur_replace_text = replace_text + str(index) if replace_text != "STR" else replace_text
+        if variable == "\\n":
+            transcript_data = re.sub(r'\\n',"STR",transcript_data)
+        else:
+            transcript_data = re.sub(r' '+variable+r'\s', " "+cur_replace_text+" ", transcript_data)
+            transcript_data = re.sub(r' '+variable+r'$', " "+cur_replace_text, transcript_data)
+            transcript_data = re.sub(r'^'+variable+r' ', cur_replace_text+" ", transcript_data)
+            transcript_data = re.sub(r' ' + variable + r'\s', " " + cur_replace_text + " ", transcript_data)
+            transcript_data = re.sub(r' ' + variable + r'$', " " + cur_replace_text, transcript_data)
+            transcript_data = re.sub(r'^' + variable + r' ', cur_replace_text + " ", transcript_data)
+    transcript_data = re.sub("empty string", "STR", transcript_data)
     return transcript_data
 
 

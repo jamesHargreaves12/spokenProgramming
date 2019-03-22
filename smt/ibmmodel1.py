@@ -1,7 +1,6 @@
 from itertools import product
 from collections import defaultdict
-from math import log,inf
-import ibm_models
+from smt import ibm_models
 
 
 def get_initial(sentance_pairs):
@@ -39,9 +38,8 @@ def train(sentence_pairs, loop_count, null_flag=True):
         sentence_pairs = [(["NULL"]+f,e) for f,e in sentence_pairs]
     t = get_initial(sentence_pairs)
     for i in range(loop_count):
-        if i % 20 == 19:
-            if __name__ != "__main__":
-                print("Loop: "+str(i+1))
+        if i % 20 == 19 and __name__ != "__main__":
+            print("Loop: "+str(i+1))
         t = get_next_t_estimate(sentence_pairs,t)
     return t
 
@@ -63,12 +61,12 @@ def get_phrase_alignment(t_e_given_f, t_f_given_e, fs, es, null_flag=True):
         phrase_alignment = [(f-1,e-1) for f,e in phrase_alignment if f*e != 0]
     return phrase_alignment
 
-def get_phrase_table_m1(sentence_pairs):
-    t_e_given_f = train(sentence_pairs,100,True)
+def get_phrase_table_m1(sentence_pairs,epoch=100,null_flag=True):
+    t_e_given_f = train(sentence_pairs,epoch,null_flag)
     rev_pairs = [(y,x) for x,y in sentence_pairs]
-    t_f_given_e = train(rev_pairs,100,True)
+    t_f_given_e = train(rev_pairs,epoch,null_flag)
     alignments = [get_phrase_alignment(t_e_given_f,t_f_given_e,fs,es) for fs,es in sentence_pairs]
-    return ibm_models.get_phrase_probabilities(alignments,sentence_pairs,null_flag=True)
+    return ibm_models.get_phrase_probabilities(alignments, sentence_pairs, null_flag=null_flag)
 
 
 def save_t(t:defaultdict,filename):
@@ -95,7 +93,7 @@ if __name__ == "__main__":
     reversed = [(e,f) for f,e in sentance_pairs]
     t_f_given_e = train(reversed, 100)
     alignments = [get_phrase_alignment(t_e_given_f, t_f_given_e, es, ps, null_flag=True) for es, ps in sentance_pairs]
-    phrase_probs = ibm_models.get_phrase_probabilities(alignments,sentance_pairs,null_flag=True)
+    phrase_probs = ibm_models.get_phrase_probabilities(alignments, sentance_pairs, null_flag=True)
     print("qq",alignments)
 
     log_phrase_table = ibm_models.get_log_phrase_table(phrase_probs)
@@ -108,7 +106,7 @@ if __name__ == "__main__":
     print("HERE")
     fs = "c a b".split(" ")
     es = "x y".split(" ")
-    print(ibm_models.get_phrases([(1,1)],fs,es))
+    print(ibm_models.get_phrases([(1, 1)], fs, es))
 
     print(phrase_probs)
     # prune_phrase_table(phrase_probs,max_length=2)
@@ -176,13 +174,13 @@ if __name__ == "__main__":
     es = "Mary did not slap the green witch".split(" ")
     phrase_alignment = {(1, 2), (6, 4), (0, 0), (3, 3), (7, 6), (2, 3), (4, 3), (8, 5), (1, 1)}
     answer = {('verde', 'green'), ('dio ́una bofetada', 'slap'), ('no dio ́una bofetada', 'did not slap'), ('bruja', 'witch'), ('no dio ́una bofetada a la bruja verde', 'did not slap the green witch'), ('Maria', 'Mary'), ('dio ́una bofetada a la', 'slap the'), ('la', 'the'), ('Maria no dio ́una bofetada a la bruja verde', 'Mary did not slap the green witch'), ('no dio ́una bofetada a la', 'did not slap the'), ('bruja verde', 'green witch'), ('Maria no dio ́una bofetada', 'Mary did not slap'), ('no', 'did not'), ('a la', 'the'), ('no dio ́una bofetada a', 'did not slap'), ('dio ́una bofetada a', 'slap'), ('dio ́una bofetada a la bruja verde', 'slap the green witch'), ('Maria no dio ́una bofetada a', 'Mary did not slap'), ('a la bruja verde', 'the green witch'), ('Maria no dio ́una bofetada a la', 'Mary did not slap the'), ('Maria no', 'Mary did not'), ('la bruja verde', 'the green witch')}
-    calculated = ibm_models.get_phrases(phrase_alignment,fs,es)
+    calculated = ibm_models.get_phrases(phrase_alignment, fs, es)
     print(6, calculated == answer)
 
     # get_phrase_probabilities()
     alignments = [[(0, 1), (0, 0)], [(0, 1), (2, 0), (1, 0)], [(0, 0)]]
     sentance_pairs = [(["la", "casa"],["the","big","house"]),(["casa", "pez","verde"],["green","house"]),(["casa"],["shop"])]
-    calculated = ibm_models.get_phrase_probabilities(alignments,sentance_pairs)
+    calculated = ibm_models.get_phrase_probabilities(alignments, sentance_pairs)
     check_list = [(('la','the big house'), 0.5), (('la','the big'),0.5),
                   (('la casa', 'the big'), 0.5), (('la casa', 'the big house'), 0.5),
                   (('pez verde', 'green'), 1.0), (('casa pez verde', 'green house'), 1.0),

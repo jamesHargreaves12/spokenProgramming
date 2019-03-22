@@ -112,4 +112,6 @@ def baseline(stem_flag):
 
     # for small dataset 80 - does best when no reordering ie data set is clearly too small
 
+
+# Constants = Stem_Flag, and size of langauge model (n)
 baseline(stem_flag=False)

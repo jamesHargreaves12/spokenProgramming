@@ -1,8 +1,7 @@
-import ibmmodel2
+from smt import ibmmodel2, ibm_models
 
 from data_prep_tools import get_data
-import ibmmodel1
-import ibm_models
+
 
 def print_alignment(align,max_e,max_f):
     for e in range(max_e):
@@ -29,10 +28,10 @@ sentance_pairs = list(zip(tokenized_transcripts,tokenized_pseudocode))
 # print(sentance_pairs[3][0])
 # print(sentance_pairs[4][0])
 # p_table1 = ibmmodel1.get_phrase_table_m1(sentance_pairs)
-p_table2 = ibmmodel2.get_phrase_table_m2(sentance_pairs,100,100,null_flag=False)
-ibm_models.prune_phrase_table(p_table2,e_max_length=9,f_max_length=15)
+p_table2 = ibmmodel2.get_phrase_table_m2(sentance_pairs, 100, 100, null_flag=False)
+ibm_models.prune_phrase_table(p_table2, e_max_length=9, f_max_length=15)
 
-ibm_models.save_phrase_table(p_table2,"p_table_m2.txt")
+ibm_models.save_phrase_table(p_table2, "p_table_m2.txt")
 
 # log_phrase_table = ibm_models.get_log_phrase_table(p_table2)
 # ibm_models.save_phrase_table(log_phrase_table,"log_new_var_id_phrase_table_m1.txt")

@@ -11,4 +11,4 @@ def find_files(word):
                 if word in data.read():
                     print(str(i) +" - " + file)
 
-find_files("take the")
+find_files(" b ")

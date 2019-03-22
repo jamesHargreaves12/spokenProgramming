@@ -4,6 +4,8 @@ import re
 from pseudocode_lang_1 import pseudo_yacc
 
 def simplified_output(tree, variable_list):
+    # print(tree)
+    # print(variable_list)
     label = tree[0]
     # print(tree)
     if label == "STATEMENTS":
@@ -144,6 +146,7 @@ def transform(pseudocode,variable_data):
     variable_list:list = [x.replace(" ", "_") for x in variable_data.split('\n')]
     parser = pseudo_yacc.parser
     parsed = parser.parse(pseudocode)
+    # print(parsed)
     return simplified_output(parsed,variable_list)
 
 

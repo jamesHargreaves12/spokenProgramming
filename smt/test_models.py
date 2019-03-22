@@ -1,7 +1,3 @@
-from data_prep_tools import get_data
-import ibmmodel1
-
-
 # def get_neighbours(point):
 #     x=point[0]
 #     y=point[1]

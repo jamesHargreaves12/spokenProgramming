@@ -6,9 +6,9 @@ transcript_count = 0
 response_id_to_count = {}
 for i in range(1,17):
     dir = base_dir+str(i)
-    audio_files = os.listdir(dir+"/audio")
+    audio_files = os.listdir(dir+"/pseudocode")
     transcript_files = os.listdir(dir+"/transcripts")
-    stripped_audio = [audio_file.strip(".wav") for audio_file in audio_files]
+    stripped_audio = [audio_file.strip(".txt") for audio_file in audio_files]
     stripped_trans = [trans_file.strip(".txt") for trans_file in transcript_files]
     transcript_count += len(transcript_files)
     for audio_file in stripped_audio:

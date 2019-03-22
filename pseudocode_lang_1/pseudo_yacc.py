@@ -2,7 +2,7 @@ from pseudocode_lang_1 import pseudo_lex
 import os
 import ply.yacc as yacc
 
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
+base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
 tokens = pseudo_lex.tokens
 lexer = pseudo_lex.lexer
 # PROBS wanna lable all the tuples if using
@@ -270,3 +270,7 @@ if __name__ == "__main__":
 			swap(j,j+1, input_list);
 		}	""")
 
+    test_str = """with_tax = 1.2 * meal_price;
+with_tip = 1.1 * with_tax;"""
+    print(parser.parse(test_str))
+    print(parser.parse("return meal_price * 1.2;"))

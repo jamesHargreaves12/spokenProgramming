@@ -1,7 +1,7 @@
 import os
 from data_prep_tools import get_data
 
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
+base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
 
 
 def do_to_all_files(input_dir1, input_dir2, output_dir, transform):
@@ -11,6 +11,7 @@ def do_to_all_files(input_dir1, input_dir2, output_dir, transform):
         print('')
         print(current_dir)
         to_go_files = file_map[current_dir]
+        # print(to_go_files)
         output_path = base_dir + str(current_dir) + "/" + output_dir
         if not os.path.exists(output_path):
             os.mkdir(output_path)
@@ -26,6 +27,8 @@ def do_to_all_files(input_dir1, input_dir2, output_dir, transform):
                 input_filepath2 = base_dir + str(current_dir) + "/" + input_dir2 + "/" + current_file_name
                 with open(input_filepath2, 'r+') as datafile:
                     data2 = datafile.read()
+                # print(data1)
+                # print(data2)
                 updated = transform(data1,data2)
             output_filepath = output_path+"/" + current_file_name
             with open(output_filepath, "w") as datafile:

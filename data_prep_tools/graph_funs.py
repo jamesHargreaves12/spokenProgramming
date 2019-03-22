@@ -11,6 +11,12 @@ class DependencyGraph():
         self.graph.vs["orig_index"] = [i for i in range(len(labels))]
         self.graph.es["type"] = []
 
+    def get_vertex_list(self):
+        return self.graph.vs
+
+    def get_verticies_by_token(self,token):
+        return [v for v in self.graph.vs if v["token"] == token]
+
     def print_tokens(self):
         print(" ".join(self.graph.vs["token"]))
 
@@ -31,6 +37,17 @@ class DependencyGraph():
 
     def remove_vertex(self,vid):
         self.graph.delete_vertices(vid)
+
+    def remove_vertex_with_child_promote(self,vertex:Vertex):
+        children_list = self.get_children(vertex)
+        if len(children_list) == 0:
+            vertex.delete()
+        elif len(children_list) == 1:
+            self.combine((vertex.index,children_list[0].index),keep_first_tok=False)
+        else :
+            # this currently just chooses the first avaliable child and promotes it amy want to look if a better solution
+            self.combine((vertex.index,children_list[0].index),keep_first_tok=False)
+
 
     def get_parents(self,vertex):
         edges = self.graph.es.select(_target=vertex)
@@ -181,6 +198,9 @@ class DependencyGraph():
         return self.graph.vs[vid]
 
     def get_vertex_by_orig_index(self, orig_index):
-        v = self.graph.vs.find(orig_index=orig_index)
-        return self.graph.vs.find(orig_index=orig_index)
+        try:
+            v = self.graph.vs.find(orig_index=orig_index)
+            return v
+        except:
+            return None
 
