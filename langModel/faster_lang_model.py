@@ -1,6 +1,8 @@
 from nltk import ngrams,FreqDist
 from collections import defaultdict
 from math import log
+
+
 def get_ngram_model(sentances, n, smoothing_type="LAPLACE", padded=False):
     '''returns a function (prefix,tok) -> p(tok|prefix)'''
     ngram_counts = defaultdict(lambda :defaultdict(int))
@@ -38,10 +40,10 @@ def get_ngram_model(sentances, n, smoothing_type="LAPLACE", padded=False):
 
 
 class LanguageModel():
-    def __init__(self, sentances, n=2, padded=True):
+    def __init__(self, sentences, n=2, padded=True):
         self.n = n
         self.padded = padded
-        self.default,self.prefix_defaults,self.grams = get_ngram_model(sentances, n, padded=padded)
+        self.default,self.prefix_defaults,self.grams = get_ngram_model(sentences, n, padded=padded)
 
         self.log_default = log(self.default)
         self.log_prefix_defaults = {}
@@ -141,6 +143,10 @@ class LanguageModel():
             prefix = tuple(prefix[1:]+tuple([tok]))
         return log_prob
 
+def train_lang_model(sentance_pairs,n):
+    return LanguageModel([p for _,p in sentance_pairs],n)
+
+
 if __name__ == "__main__":
 
     def equal_to5dp(val1,val2):
@@ -150,8 +156,8 @@ if __name__ == "__main__":
     s2 = "Sam I am".split(" ")
     s3 = "I do not like green eggs and ham".split(" ")
 
-    sentances = [s1,s2,s3]
-    model = LanguageModel(sentances, n=2)
+    sentances_test = [s1, s2, s3]
+    model = LanguageModel(sentances_test, n=2)
     print(model.get_prob_sentance(s1) == 0.0007396449704142012)
     print(model.get_prob_sentance(s2) == 0.0004930966469428007)
     print(model.get_prob_sentance(s3) == 1.1659924106543872e-07)

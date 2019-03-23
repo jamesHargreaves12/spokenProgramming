@@ -90,7 +90,7 @@ def baseline():
                 print(i)
                 transcript = transcripts_simplified[i]
                 only_posible_tokens = transcript_to_code_tokens(transcript.strip("\n"),pseudocode_tokens)
-                pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering(only_posible_tokens, n, t)
+                pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering_v1(only_posible_tokens, n, t)
                 reordered = [x for x in pseudocode_attempt.split(" ") if not x == ""]
                 actual = [x for x in truth[i].split(" ") if not x == ""]
                 with_reordering_distance.append(minimum_edit_distance(reordered,actual))

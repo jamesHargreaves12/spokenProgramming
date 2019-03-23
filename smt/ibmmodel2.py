@@ -3,15 +3,16 @@ from scipy.stats import norm
 from itertools import product
 from math import inf
 from smt import test_models, ibm_models, ibmmodel1
-
+from tools.find_resource_in_project import get_path
 
 D_SIGMA = lambda x: x/1.96
 d_cache = {}
+d_cache_path = get_path("/default_d_cache/cache.txt")
 
 
 def load_d_cache():
     count = 0
-    with open("default_d_cache/cache.txt","r") as file:
+    with open(d_cache_path, "r") as file:
         for line in file.readlines():
             count += 1
             line.strip("\n")
@@ -22,7 +23,7 @@ def load_d_cache():
 
 
 load_d_cache()
-d_cache_file = open("default_d_cache/cache.txt","a")
+d_cache_file = open(d_cache_path, "a")
 def default_d(i,j,l,m):
     if (i,j,l,m) in d_cache:
         return d_cache[(i,j,l,m)]
@@ -204,21 +205,18 @@ def print_specific_d(d,l,m):
 def get_phrase_table_m2(sentence_pairs,m1_loop_count,m2_loop_count,null_flag=True):
     test_index = 3
     test_pairs = sentence_pairs[test_index]
-    # print(test_pairs,len(test_pairs[1]),len(test_pairs[0]))
 
-    t_e_given_f,d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag,t_filename="t_1.txt")
-    # print_specific_d(d_e_given_f,len(test_pairs[1]),len(test_pairs[0]))
+    # t_e_given_f,d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag,t_filename="t_1.txt")
+    t_e_given_f,d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag)
 
     rev_pairs = [(y,x) for x,y in sentence_pairs]
-    t_f_given_e,d_f_given_e = train(rev_pairs,m1_loop_count,m2_loop_count,null_flag,t_filename="t_2.txt")
-    # print_specific_d(d_f_given_e,len(test_pairs[0]),len(test_pairs[1]))
-    # alignment =(get_phrase_alignment_2(t_e_given_f, d_e_given_f, t_f_given_e, d_f_given_e, test_pairs[1],test_pairs[0],null_flag))
+    # t_f_given_e,d_f_given_e = train(rev_pairs,m1_loop_count,m2_loop_count,null_flag,t_filename="t_2.txt")
+    t_f_given_e,d_f_given_e = train(rev_pairs,m1_loop_count,m2_loop_count,null_flag)
 
     alignments = [get_phrase_alignment_2(t_e_given_f, d_e_given_f, t_f_given_e, d_f_given_e, es,fs,null_flag) for fs,es in sentence_pairs]
     test_models.print_alignment([(y, x) for x, y in alignments[test_index]], test_pairs)
     print(ibm_models.get_phrases([(y, x) for x, y in alignments[test_index]], test_pairs[0], test_pairs[1]))
-    # print(ibm_models.get_phrases(alignments[test_index],test_pairs[0],test_pairs[1]))
-    return ibm_models.get_phrase_probabilities(alignments, sentence_pairs, null_flag=null_flag)
+    return ibm_models.get_phrase_probabilities(alignments, sentence_pairs)
 
 
 # sentence_pairs = general.get_sentance_pairs()

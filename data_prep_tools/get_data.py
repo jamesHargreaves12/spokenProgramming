@@ -1,16 +1,14 @@
 import os
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
+base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
 
 def get_data_from_directory(dir_name, base_dir_path=None):
     if not base_dir_path:
         base_dir_path = base_dir
     data = []
     for i in range(1, 17):
-        print(i)
         dir = base_dir_path + str(i) + dir_name
         input_files = os.listdir(dir)
         for filename in input_files:
-            print(filename)
             with open(dir + filename, "r") as in_file:
                 data.append(in_file.read())
     return data

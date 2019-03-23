@@ -1,6 +1,8 @@
 from collections import defaultdict
 from math import inf,log
 
+from tools.find_resource_in_project import get_path
+
 PREVENT_VARIABLE_TO_NULL_MAP = True
 
 def prune_phrase_table(phrase_table, e_max_length=-1, f_max_length=-1):
@@ -41,7 +43,7 @@ def open_phrase_table(filename):
     error_fn = lambda: print("ERROR: file not formed correctly")
     state = "DEFAULT"
     current_f = "qq"
-    with open("phrase_table/"+filename,'r') as file:
+    with open(get_path("/phrase_table/"+filename),'r') as file:
         for line in file.readlines():
             line = line.strip("\n")
             if state == "DEFAULT":
@@ -89,15 +91,6 @@ def get_best_pairing(t_f_given_e, fs, es, d_f_given_e=None):
             print("ISSUE with pairing")
         else:
             alignment.add((j,max_index))
-
-    # if '=' in fs:
-    #     print(1)
-    #     for_print_a = [(y,x) for x,y in alignment]
-    #     test_models.print_alignment(for_print_a,(es,fs))
-    # else:
-    #     print(0)
-    #     test_models.print_alignment(alignment,(fs,es))
-
     return alignment
 
 
@@ -135,8 +128,6 @@ def get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev):
                 alignment.add(neighbour)
                 to_check_stack.append(neighbour)
                 union.remove(neighbour)
-    # print("Mid way:")
-    # print(alignment)
     #finalise
     for point in union:
         unique_row, unique_col = in_unique_row_col(point, alignment)
@@ -190,14 +181,13 @@ def get_phrases(phrase_alignment, fs, es):
     return phrases
 
 
-def get_phrase_probabilities(alignments,sentance_pairs,null_flag=True):
-    # NULL FLAG?
+def get_phrase_probabilities(alignments,sentance_pairs):
     phrase_count = defaultdict(int)
     f_phrase_count = defaultdict(int)
-    for i,align in enumerate(alignments):
-        fs = sentance_pairs[i][0]
-        es = sentance_pairs[i][1]
-        phrases = get_phrases([(y,x) for x,y in align],fs,es)
+    for align,pair in zip(alignments,sentance_pairs):
+        fs,es = pair
+        phrases = get_phrases(align,fs,es)
+        # phrases = get_phrases([(y,x) for x,y in align],fs,es)
         for f,e in phrases:
             phrase_count[(f,e)] += 1
             f_phrase_count[f] += 1
@@ -206,6 +196,7 @@ def get_phrase_probabilities(alignments,sentance_pairs,null_flag=True):
         phrase_probs[f][e] = phrase_count[(f,e)] / f_phrase_count[f]
     return phrase_probs
 
-p_table = open_phrase_table("p_table_m2.txt")
-log_p_table = get_log_phrase_table(p_table)
-save_phrase_table(log_p_table,"log_p_table_m2.txt")
+if __name__ == "__main__":
+    p_table = open_phrase_table("p_table_m2.txt")
+    log_p_table = get_log_phrase_table(p_table)
+    save_phrase_table(log_p_table,"log_p_table_m2.txt")

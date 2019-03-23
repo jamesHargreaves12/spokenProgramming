@@ -4,6 +4,9 @@ import random
 
 from data_prep_tools import get_data
 
+def tokenize(long_string):
+    stripped = long_string.strip('\n')
+    return [x for x in stripped.split(" ") if x != ""]
 
 def _get_all_files():
     base_dir1 = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
@@ -15,8 +18,11 @@ def _get_all_files():
     transcripts_2 = get_data.get_data_from_directory("/transcripts_var_replaced/",base_dir2)
     pseudocode_2 = get_data.get_data_from_directory("/pseudocode_simplified/",base_dir2)
     print("Project Data part 2/2 loaded")
-
-    return transcripts_1 + transcripts_2, pseudocode_1 + pseudocode_2
+    transcripts = transcripts_1 + transcripts_2
+    pseudocodes = pseudocode_1 + pseudocode_2
+    tokenized_transcripts = [tokenize(trans) for trans in transcripts]
+    tokenized_pseudocodes = [tokenize(pseud) for pseud in pseudocodes]
+    return tokenized_transcripts, tokenized_pseudocodes
 
 
 def _get_folds_rr(long_list, num_chunks):
@@ -37,23 +43,21 @@ def _get_folds_sequential(long_list,num_chunks):
     return [long_list[0:length_chunk]] + rest
 
 
-def _get_folds_random(long_list_1,long_list_2,num_chunks):
-    assert(len(long_list_1) == len(long_list_2))
-    indices = [x for x in range(len(long_list_1))]
-    random.shuffle(indices)
-    indices_per_fold = _get_folds_sequential(indices,num_chunks)
-    list1_folds = [[long_list_1[i] for i in indxs] for indxs in indices_per_fold]
-    list2_folds = [[long_list_2[i] for i in indxs] for indxs in indices_per_fold]
-    return list1_folds,list2_folds
-
+def _get_folds_random(long_list,num_chunks):
+    random.shuffle(long_list)
+    return _get_folds_sequential(long_list,num_chunks)
 
 def get_folds(num_folds,method="RAN"):
     transcripts,pseudocode = _get_all_files()
+    all_data = [x for x in zip(transcripts,pseudocode)]
     if method == "RAN":
-        return _get_folds_random(transcripts,pseudocode,num_folds)
+        return _get_folds_random(all_data,num_folds)
     elif method == "SEQ":
-        return _get_folds_sequential(transcripts,num_folds),\
-               _get_folds_sequential(pseudocode,num_folds)
+        return _get_folds_sequential(all_data,num_folds)
     else:
-        return _get_folds_rr(transcripts,num_folds),\
-               _get_folds_rr(pseudocode,num_folds)
+        return _get_folds_rr(all_data,num_folds)
+
+if __name__ == "__main__":
+    print(sum([len(x) for x in get_folds(5)]))
+    print(sum([len(x) for x in get_folds(5,"SEQ")]))
+    print(sum([len(x) for x in get_folds(5,"RR")]))

@@ -2,6 +2,7 @@ from baseline.get_pseudocode_token_list import get_pseudocode_tokens
 from data_prep_tools import get_data
 from termcolor import colored
 from baseline import get_n_gram_reordering
+from langModel.faster_lang_model import LanguageModel
 from tools.minimum_edit_distance import minimum_edit_distance
 import math
 from other.matrix_to_image import show_heatmap
@@ -28,7 +29,8 @@ def print_coloured_changes(removed,mapped,orig_tokens):
                 print_text += colored(" ".join(value[0]) + " ", "blue")
             else:
                 print_text += colored(" ".join(value[0]) + "(" + value[1] + ") ", "blue")
-    print(print_text)
+    if __name__ == "__main__":
+        print(print_text)
 
 
 def is_first_token_equal_stem(transcript_words, token_identifier, start_index):
@@ -76,6 +78,7 @@ def transcript_to_code_tokens(transcript, token_map, stem_flag):
             print_coloured_changes(removed, mapped, orig_tokens)
             return [x for x in result if x != "NOT_A_TOKEN"]
 
+
 def baseline(stem_flag):
     pseudocode_tokens = get_pseudocode_tokens()
     transcripts_simplified = get_data.get_data_from_directory("/transcripts_var_replaced/")
@@ -93,7 +96,7 @@ def baseline(stem_flag):
                 # print(i)
                 transcript = transcripts_simplified[i]
                 only_posible_tokens = transcript_to_code_tokens(transcript.strip("\n"), pseudocode_tokens, stem_flag)
-                pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering(only_posible_tokens, n, t)
+                pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering_v1(only_posible_tokens, n, t)
                 reordered = [x for x in pseudocode_attempt.split(" ") if not x == ""]
                 actual = [x for x in truth[i].split(" ") if not x == ""]
                 edit_distance = minimum_edit_distance(reordered,actual)
@@ -113,5 +116,5 @@ def baseline(stem_flag):
     # for small dataset 80 - does best when no reordering ie data set is clearly too small
 
 
-# Constants = Stem_Flag, and size of langauge model (n)
-baseline(stem_flag=False)
+if __name__ == "__main__":
+    baseline(stem_flag=False)

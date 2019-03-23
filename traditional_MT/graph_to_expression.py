@@ -1,6 +1,7 @@
 from enum import Enum
 
 from data_prep_tools.graph_funs import DependencyGraph
+from tools.find_resource_in_project import get_path
 from traditional_MT import load_dep_parse
 
 
@@ -399,12 +400,12 @@ toks,deps = load_dep_parse.get_token_deps()
 #     print("***************",i)
 #     print(get_output_string(toks[i],deps[i]))
 
-with open("../results/traditional_train.txt","w+") as file:
+with open(get_path("/results/traditional_train.txt"),"w+") as file:
     for tok,dep in zip(toks[:49],deps[:49]):
         file.write(get_output_string(tok,dep))
         file.write('\n')
 
-with open("../results/traditional_test1.txt","w+") as file:
+with open(get_path("/results/traditional_test1.txt"),"w+") as file:
     for tok,dep in zip(toks[49:],deps[49:]):
         file.write(get_output_string(tok,dep))
         file.write('\n')

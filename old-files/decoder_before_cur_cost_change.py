@@ -1,6 +1,6 @@
 from heapq import heappop,heappush,heappushpop
 from smt import ibmmodel1
-from smt.faster_lang_model import LanguageModel
+from langModel.faster_lang_model import LanguageModel
 import time
 from math import log,inf
 

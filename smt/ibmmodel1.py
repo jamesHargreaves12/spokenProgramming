@@ -1,6 +1,7 @@
 from itertools import product
 from collections import defaultdict
 from smt import ibm_models
+from tools.find_resource_in_project import get_path
 
 
 def get_initial(sentance_pairs):
@@ -61,23 +62,24 @@ def get_phrase_alignment(t_e_given_f, t_f_given_e, fs, es, null_flag=True):
         phrase_alignment = [(f-1,e-1) for f,e in phrase_alignment if f*e != 0]
     return phrase_alignment
 
+
 def get_phrase_table_m1(sentence_pairs,epoch=100,null_flag=True):
     t_e_given_f = train(sentence_pairs,epoch,null_flag)
     rev_pairs = [(y,x) for x,y in sentence_pairs]
     t_f_given_e = train(rev_pairs,epoch,null_flag)
-    alignments = [get_phrase_alignment(t_e_given_f,t_f_given_e,fs,es) for fs,es in sentence_pairs]
-    return ibm_models.get_phrase_probabilities(alignments, sentence_pairs, null_flag=null_flag)
+    alignments = [get_phrase_alignment(t_e_given_f,t_f_given_e,fs,es,null_flag) for fs,es in sentence_pairs]
+    return ibm_models.get_phrase_probabilities(alignments, sentence_pairs)
 
 
 def save_t(t:defaultdict,filename):
-    with open("t_models/"+filename,"w") as file:
+    with open(get_path("/t_models/"+filename),"w") as file:
         file.write(str(t.default_factory())+"\n")
         for k,v in t.items():
             file.write(str(k[0])+"qq"+str(k[1]) +" q:q "+ str(v)+"\n")
 
 
 def open_t(filename):
-    with open("t_models/"+filename,"r") as file:
+    with open(get_path("/t_models/"+filename),"r") as file:
         first_line = file.readline()
         t = defaultdict(lambda: float(first_line))
         for line in file.readlines():
@@ -89,21 +91,22 @@ def open_t(filename):
 if __name__ == "__main__":
     sentance_pairs = [(["la", "casa"],["the","big","house"]),(["casa", "pez","verde"],["green","house"]),(["casa"],["shop"])]
 
-    t_e_given_f = train(sentance_pairs, 100)
+    t_e_given_f = train(sentance_pairs, 100, False)
     reversed = [(e,f) for f,e in sentance_pairs]
-    t_f_given_e = train(reversed, 100)
-    alignments = [get_phrase_alignment(t_e_given_f, t_f_given_e, es, ps, null_flag=True) for es, ps in sentance_pairs]
-    phrase_probs = ibm_models.get_phrase_probabilities(alignments, sentance_pairs, null_flag=True)
-    print("qq",alignments)
+    t_f_given_e = train(reversed, 100, False)
+    alignments = [get_phrase_alignment(t_e_given_f, t_f_given_e, es, ps, null_flag=False) for es, ps in sentance_pairs]
+    print("ALIGN",alignments)
+    phrase_probs = ibm_models.get_phrase_probabilities(alignments, sentance_pairs)
+
+    # print("qq",alignments)
 
     log_phrase_table = ibm_models.get_log_phrase_table(phrase_probs)
-# confident that this is right but that having NULL in small corpora does work:
+# confident that this is right but that having NULL in small corpora doesnt work:
 # since both casa and null tokens in every sentance so indistiguishable as far as the model is concerned
     print()
     ibm_models.print_phrase_table(phrase_probs)
     print()
     ibm_models.print_phrase_table(log_phrase_table)
-    print("HERE")
     fs = "c a b".split(" ")
     es = "x y".split(" ")
     print(ibm_models.get_phrases([(1, 1)], fs, es))
@@ -185,4 +188,5 @@ if __name__ == "__main__":
                   (('la casa', 'the big'), 0.5), (('la casa', 'the big house'), 0.5),
                   (('pez verde', 'green'), 1.0), (('casa pez verde', 'green house'), 1.0),
                   (('casa', 'house'), 0.5), (('casa', 'shop'), 0.5)]
+    print(calculated)
     print(7,all([calculated[alignment[0]][alignment[1]] == prob for alignment,prob in check_list]))

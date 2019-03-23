@@ -1,12 +1,13 @@
 import csv
 import re
 from data_prep_tools import get_data
+from tools.find_resource_in_project import get_path
 
 
 def get_programming_symbols_map():
     # source = https://blog.codinghorror.com/ascii-pronunciation-rules-for-programmers/
     symbol_to_name = {}
-    with open("data/programming_symbols.csv", "r") as csvfile:
+    with open(get_path("data/programming_symbols.csv"), "r") as csvfile:
         csvfile.readline()
         rows = csv.reader(csvfile, delimiter=",")
         current_symbol = ""
@@ -77,10 +78,12 @@ def get_programming_symbols_map():
     return symbol_to_name
 
 
-def get_pseudocode_tokens():
+def get_pseudocode_tokens(pseudocode_toks_list=None):
     tokens_present = set()
-    for pseudocode in get_data.get_data_from_directory("/pseudocode_simplified/"):
-        tokens = pseudocode.split()
+    if not pseudocode_toks_list:
+        pseudocode_list = get_data.get_data_from_directory("/pseudocode_simplified/")
+        pseudocode_toks_list = [x.split(" ") for x in pseudocode_list]
+    for tokens in pseudocode_toks_list:
         for token in tokens:
             if len(token) > 1 and not token[0].isalpha() and not token[0].isdigit():
                 tokens_present.add(token[0])
@@ -113,14 +116,13 @@ def get_pseudocode_tokens():
     token_to_symbol["end if"] = "NOT_A_TOKEN"
     token_to_symbol["end the if"] = "NOT_A_TOKEN"
     token_to_symbol["end the for"] = "NOT_A_TOKEN"
-    token_to_symbol["increment"] = "+ ="
-    token_to_symbol["decrement"] = "- ="
-    token_to_symbol["different than"] = "! ="
+    token_to_symbol["increment"] = "+="
+    token_to_symbol["decrement"] = "-="
+    token_to_symbol["different than"] = "!="
     token_to_symbol["position"] = "index"
     token_to_symbol["location"] = "index"
     token_to_symbol["key"] = "index"
     token_to_symbol["otherwise"] = "else"
-
     return token_to_symbol
 
 if __name__ == "__main__":

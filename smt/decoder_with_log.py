@@ -1,12 +1,25 @@
 from heapq import heappop,heappush,heappushpop
 from smt import ibmmodel1
-from smt.faster_lang_model import LanguageModel
+from langModel.faster_lang_model import LanguageModel
 import time
 from math import log,inf
 alpha = 0.7
 omega = 2
 log_omega = log(omega)
 log_alpha = log(alpha)
+print_on = True
+
+
+def set_alpha(value):
+    global alpha,log_alpha
+    alpha = value
+    log_alpha = log(value)
+
+
+def set_omega(value):
+    global omega,log_omega
+    omega = value
+    log_omega = log(value)
 
 
 def log_short_sentance_penalty(len_e):
@@ -36,12 +49,6 @@ def log_cur_cost(cur_cost:float, new_hyp:tuple, targ_so_far:str, cur_end_f_word:
         delta_distortion = 0
     else:
         delta_distortion = log_d(new_start_f,cur_end_f_word)
-
-    # print(delta_distortion)
-    # print(delta_lang_model)
-    # print(delta_short_sentance)
-    # print(delta_translation)
-
     return cur_cost+delta_lang_model+delta_translation+delta_distortion+delta_short_sentance
 
 
@@ -58,9 +65,11 @@ def get_cache_entry(key):
         return future_estimate_cache[key]
     return None
 
+
 def add_to_cache(key, value):
     global future_estimate_cache
     future_estimate_cache[key] = value
+
 
 def get_max_log_prob_estimate(sequence_of_words,phrase_to_max_log_prob):
     # initially this will just be the phrase_table eventually I would like this to be phrase_table with a language model applied to it in a preprocessing step
@@ -86,15 +95,6 @@ def get_max_log_prob_estimate(sequence_of_words,phrase_to_max_log_prob):
                 max_prob = max_prob if max_prob > table_score else table_score
             log_table[n][first_pos] = max_prob
     estimate = log_table[N-1][0]
-    # if estimate == -inf:
-    #     for line in log_table:
-    #         print_str = ""
-    #         for cell in line:
-    #             if cell == -inf:
-    #                 print_str += "- "
-    #             else:
-    #                 print_str += ". "
-    #         print(print_str)
     add_to_cache(cache_key,estimate)
     return estimate
 
@@ -147,14 +147,14 @@ def get_new_hyps(current_bounds,log_phrase_table,source,len_source):
                         # new_hyps.append((new_hyp,used_word_count+end_phrase-start_phrase+1))
     return new_hyps
 
+
 def get_phrase_to_max_prob(phrase_table):
     phrase_to_max_prob = {}
     for phrase in phrase_table:
-        # print(phrase)
-        # print(phrase_table[phrase])
         max_translation = max(phrase_table[phrase], key=lambda key: phrase_table[phrase][key])
         phrase_to_max_prob[phrase] = phrase_table[phrase][max_translation]
     return phrase_to_max_prob
+
 
 def add_to_hypothesis_stack(stacks,item,thresh,i):
     cost = item
@@ -171,6 +171,7 @@ def add_to_hypothesis_stack(stacks,item,thresh,i):
         heappush(stack,item)
         if len(stack) == 1000:
             thresh[i] = stack[0][0]
+
 
 def remove_section_from_bounds(bounds,section):
     start_sec,end_sec = section
@@ -190,6 +191,7 @@ def remove_section_from_bounds(bounds,section):
         bounds.pop(i)
     return bounds
 
+
 def beam_search_stack_decoder(source,lang_model,log_phrase_table):
     # using pseudocode on page 908 of J&M 2 edition
     # trans_info_so_far = phrase_boundaries, most recently translated end word, target translation so far
@@ -205,22 +207,27 @@ def beam_search_stack_decoder(source,lang_model,log_phrase_table):
     thresh = [-inf for _ in range(1+len_source)]
     heappush(hypothesis_stacks[0],initial_value)
     for i,stack in enumerate(hypothesis_stacks):
+        if stack:
+            best_hype_so_far = stack[0]
+        score_of_best = -inf
+
         if i == len_source:
             break
-        # print()
-        if i != 0 and __name__ != "__main__":
+        if i != 0 and __name__ != "__main__" and print_on:
             print(time.time()-start)
-            print('******************')
-            print(i)
+            print('******************',i)
         start = time.time()
         while stack:
             current_hyp = heappop(stack)
-            # print("Considering: " + str(current_hyp))
             cur_cost_current:float = current_hyp[2]
             current_trans_info = current_hyp[1]
             current_bounds = current_trans_info[0]
             targ_so_far = current_trans_info[2]
             cur_end_f_word = current_trans_info[1]
+            if cur_cost_current > score_of_best:
+                score_of_best = cur_cost_current
+                best_hype_so_far = current_hyp
+
             for new_hyp,covered_count in get_new_hyps(current_bounds,log_phrase_table,source,len_source):
                 hyp_start,hyp_end,hyp_trans = new_hyp
                 hyp_bounds = remove_section_from_bounds(current_bounds.copy(),(hyp_start,hyp_end))
@@ -238,8 +245,10 @@ def beam_search_stack_decoder(source,lang_model,log_phrase_table):
                 new_hyp_item = hyp_bounds,new_hyp[1],new_trans
 
                 add_to_hypothesis_stack(hypothesis_stacks,(cost,new_hyp_item,log_cur_cost_hyp),thresh,covered_count)
-
-    best_hyp = max(hypothesis_stacks[len_source])
+    if hypothesis_stacks[len_source]:
+        best_hyp = max(hypothesis_stacks[len_source])
+    else:
+        best_hyp = best_hype_so_far
     return best_hyp[1][2]
 
 
