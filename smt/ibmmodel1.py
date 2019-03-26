@@ -13,14 +13,14 @@ def get_initial(sentance_pairs):
     return t_initial
 
 
-def get_next_t_estimate(sentance_pairs,t):
+def get_next_t_estimate(sentence_pairs, t):
     # using algoritm from http://mt-class.org/jhu/slides/lecture-ibm-model1.pdf
     # gives t(e|f)
     count = defaultdict(float)
     total = defaultdict(float)
     lexicon_e = set()
     lexicon_f = set()
-    for fs,es in sentance_pairs:
+    for fs,es in sentence_pairs:
         s_total = defaultdict(float)
         for f,e in product(fs,es):
             s_total[e] += t[(e,f)]

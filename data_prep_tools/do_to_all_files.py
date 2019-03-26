@@ -1,7 +1,7 @@
 import os
 from data_prep_tools import get_data
 
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
+base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
 
 
 def do_to_all_files(input_dir1, input_dir2, output_dir, transform):

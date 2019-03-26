@@ -11,11 +11,13 @@ def get_n_grams(unigrams,n):
         n_grams.append(unigrams[i:i+n])
     return n_grams
 
+
 def get_unigrams_from_text(text):
     unigrams = ["START"]
     unigrams.extend([x for x in text if x != ''])
     unigrams.append("END")
     return unigrams
+
 
 def get_pseudocode_n_gram_counts(n):
     counts = defaultdict(int)
@@ -26,6 +28,7 @@ def get_pseudocode_n_gram_counts(n):
         for gram in n_grams:
             counts[tuple(gram)] += 1
     return counts
+
 
 def get_most_likely_ordering_v1(transcript, n, threshold):
     n_gram_counts = get_pseudocode_n_gram_counts(n)

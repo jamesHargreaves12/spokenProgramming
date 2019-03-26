@@ -17,9 +17,10 @@ def get_pseudocode_tokens(train_data):
     pseudocode_toks = [p for _,p in train_data]
     return get_pseudocode_token_list.get_pseudocode_tokens(pseudocode_toks)
 
+
 # infered constants = n in lang_model
 # Constants = stem_flag, threshold
 # transcript = stream of toks
 def get_output_baseline(transcript, lang_model:LanguageModel, pseudocode_tokens, stem_flag, threshold):
-    only_posible_tokens = transcript_to_code_tokens(" ".join(transcript), pseudocode_tokens, stem_flag)
+    only_posible_tokens = transcript_to_code_tokens(transcript, pseudocode_tokens, stem_flag)
     return get_n_gram_reordering.get_most_likely_ordering_v2(only_posible_tokens, lang_model, threshold=threshold)

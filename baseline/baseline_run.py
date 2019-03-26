@@ -1,3 +1,4 @@
+from baseline.constants import NOT_A_TOKEN_IN_USE
 from baseline.get_pseudocode_token_list import get_pseudocode_tokens
 from data_prep_tools import get_data
 from termcolor import colored
@@ -41,6 +42,7 @@ def is_first_token_equal_stem(transcript_words, token_identifier, start_index):
             return False
     return True
 
+
 def is_first_token_equal_no_stem(transcript_words, token_identifier, start_index):
     tok_words = token_identifier.split(" ")
     for i,tok in enumerate(tok_words):
@@ -49,8 +51,7 @@ def is_first_token_equal_no_stem(transcript_words, token_identifier, start_index
     return True
 
 
-def transcript_to_code_tokens(transcript, token_map, stem_flag):
-    transcript_tokens = [x for x in transcript.split(" ") if not x == ""]
+def transcript_to_code_tokens(transcript_tokens, token_map, stem_flag):
     orig_tokens = transcript_tokens[:]
     removed = []
     mapped = []
@@ -76,7 +77,10 @@ def transcript_to_code_tokens(transcript, token_map, stem_flag):
 
         if len(transcript_tokens) == cur_index:
             print_coloured_changes(removed, mapped, orig_tokens)
-            return [x for x in result if x != "NOT_A_TOKEN"]
+            if NOT_A_TOKEN_IN_USE:
+                return [x for x in result if x != "NOT_A_TOKEN"]
+            else:
+                result
 
 
 def baseline(stem_flag):
@@ -95,7 +99,8 @@ def baseline(stem_flag):
                 # print()
                 # print(i)
                 transcript = transcripts_simplified[i]
-                only_posible_tokens = transcript_to_code_tokens(transcript.strip("\n"), pseudocode_tokens, stem_flag)
+                transcript_tokens = [x for x in transcript.strip("\n").split(" ") if not x == ""]
+                only_posible_tokens = transcript_to_code_tokens(transcript_tokens, pseudocode_tokens, stem_flag)
                 pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering_v1(only_posible_tokens, n, t)
                 reordered = [x for x in pseudocode_attempt.split(" ") if not x == ""]
                 actual = [x for x in truth[i].split(" ") if not x == ""]

@@ -14,6 +14,7 @@ def train_ibmmodel1(sentance_pairs,epoch,null_flag):
 
 def get_log_phrase_table1(sentance_pairs,epoch,null_flag):
     phrase_t = train_ibmmodel1(sentance_pairs,epoch,null_flag)
+    ibm_models.prune_phrase_table(phrase_t, e_max_length=9, f_max_length=15)
     return ibm_models.get_log_phrase_table(phrase_t)
 
 
@@ -21,14 +22,14 @@ def get_log_phrase_table1(sentance_pairs,epoch,null_flag):
 # Constants in File = D_SIGMA
 # prune Constants = e_max_length, f_max_length
 # sentance_pairs are zipped
-def train_ibmmodel2(sentance_pairs):
-    phrase_t = ibmmodel2.get_phrase_table_m2(sentance_pairs,100,100,True)
-    return ibm_models.prune_phrase_table(phrase_t, e_max_length=9, f_max_length=15)
-
+def train_ibmmodel2(sentance_pairs,epoch,null_flag):
+    phrase_t = ibmmodel2.get_phrase_table_m2(sentance_pairs,epoch,epoch,null_flag)
+    ibm_models.prune_phrase_table(phrase_t, e_max_length=9, f_max_length=15)
+    return phrase_t
 
 # sentance_pairs are zipped
-def get_log_phrase_table2(sentance_pairs):
-    phrase_t = train_ibmmodel2(sentance_pairs)
+def get_log_phrase_table2(sentance_pairs,epoch,null_flag):
+    phrase_t = train_ibmmodel2(sentance_pairs,epoch,null_flag)
     return ibm_models.get_log_phrase_table(phrase_t)
 
 

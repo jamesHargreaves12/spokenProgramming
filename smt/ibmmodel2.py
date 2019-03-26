@@ -42,9 +42,11 @@ def default_d(i,j,l,m):
     d_cache_file.write(str(i) + " " + str(j) + " " + str(l) + " " + str(m) + " " + str(value) + "\n")
     return value
 
+
 def get_initial_t(sentance_pairs, m1_loop_count, null_flag=True):
     # probably would like to get this from a file for speed
     return ibmmodel1.train(sentance_pairs, m1_loop_count, null_flag=null_flag)
+
 
 def d_fn(d_dict:dict,i,j,l,m):
     if((j,l,m) in d_dict and i in d_dict[(j,l,m)]):
@@ -58,20 +60,10 @@ def get_next_estimate(t:dict,d:dict,sentence_pairs):
 
     a_ijk = {}
     n = len(sentence_pairs)
-    for k in range(n):
-        fs,es = sentence_pairs[k]
-        l = len(es)
-        m = len(fs)
-        for j in range(m):
-            total_for_i = 0
-            for i in range(l):
-                a_ijk[(i,j,k)] = d_fn(d,i,j,l,m)*t[es[i],fs[j]]
-                total_for_i += a_ijk[(i,j,k)]
-            # normalise
-            if total_for_i > 0:
-                for i in range(l):
-                    a_ijk[(i,j,k)] /= total_for_i
-    # calculate the expected counts
+    t_count = defaultdict(float)
+    s_count = defaultdict(float)
+    a_count = defaultdict(float)
+    tot_a_count = defaultdict(float)
     # t_count(e,f) is expected number of times that e is aligned with f in the corpus
     # s_count(e) is expected number of times that e is aligned with any French word in the corpus
     # a_count(i,j,l,m) is expected number of times that es[k][i] is aligned to fs[k][j] in English/French sentences of lengths l and m respectively
@@ -79,17 +71,23 @@ def get_next_estimate(t:dict,d:dict,sentence_pairs):
     lexicon_e = set()
     lexicon_f = set()
 
-    t_count = defaultdict(float)
-    s_count = defaultdict(float)
-    a_count = defaultdict(float)
-    tot_a_count = defaultdict(float)
     for k in range(n):
         fs,es = sentence_pairs[k]
         l = len(es)
         m = len(fs)
         for j in range(m):
+            total_for_i = 0
             f = fs[j]
             lexicon_f.add(f)
+
+            for i in range(l):
+                a_ijk[(i,j,k)] = d_fn(d,i,j,l,m)*t[es[i],f]
+                total_for_i += a_ijk[(i,j,k)]
+            # normalise
+            if total_for_i > 0:
+                for i in range(l):
+                    a_ijk[(i,j,k)] /= total_for_i
+            # calculate the expected counts
             for i in range(l):
                 e = es[i]
                 lexicon_e.add(e)
@@ -113,6 +111,7 @@ def get_next_estimate(t:dict,d:dict,sentence_pairs):
                 d[(j,l,m)][i] = a_count[(i,j,l,m)]/tot_a_count[(j,l,m)]
     return t,d
 
+
 def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filename=None):
     print("Train IBM_M1")
     d = {}
@@ -120,7 +119,7 @@ def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filenam
         t = ibmmodel1.open_t(t_filename)
     else:
         t = get_initial_t(sentence_pairs, m1_loop_count, null_flag)
-        ibmmodel1.save_t(t, "t_2.txt")
+        ibmmodel1.save_t(t,"t_2.txt")
 
     print("Train IBM_M2")
     if null_flag:
@@ -132,6 +131,7 @@ def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filenam
     # print(t)
     return t,d
 
+
 def remove_t_maps_to_zero(t):
     removes = []
     for x in t:
@@ -141,12 +141,14 @@ def remove_t_maps_to_zero(t):
         t.pop(rem)
     return t
 
+
 def save_d(d,filename):
     with open("distribution_table/"+filename, 'w') as file:
         for jlm,i_prob in d.items():
             file.write("********** jlm = "+str(jlm)+"\n")
             for i,prob in i_prob.items():
                 file.write(str(i) +": "+str(prob)+"\n")
+
 
 def open_dist_table(filename):
     error_fn = lambda: print("ERROR: file not formed correctly")
@@ -164,6 +166,7 @@ def open_dist_table(filename):
                 d_table[current_jlm][int(i)] = float(prob)
     return d_table
 
+
 def get_log_distribution_table(d):
     log_d_table = defaultdict(lambda : defaultdict(lambda : -inf))
     for jlm,i_prob in d.items():
@@ -172,7 +175,7 @@ def get_log_distribution_table(d):
     return log_d_table
 
 
-def get_phrase_alignment_2(t_e_given_f,d_e_given_f, t_f_given_e, d_f_given_e, fs, es, null_flag=True):
+def get_phrase_alignment_2(t_e_given_f,d_e_given_f, t_f_given_e, d_f_given_e, fs:str, es:str, null_flag=True):
     # http://ivan-titov.org/teaching/elements.ws13-14/elements-7.pdf alg from here
     # likely can be improved using a data structure
     # es_2 = es
@@ -183,13 +186,7 @@ def get_phrase_alignment_2(t_e_given_f,d_e_given_f, t_f_given_e, d_f_given_e, fs
 
     f_given_e_pairing = ibm_models.get_best_pairing(t_f_given_e, fs, es, d_f_given_e)
     e_given_f_pairing = ibm_models.get_best_pairing(t_e_given_f, es, fs, d_e_given_f)
-    # print(f_given_e_pairing)
-    # print(e_given_f_pairing)
-    # print()
 
-    # print(t_f_given_e)
-    # print(d_e_given_f)
-    # print(ibm_models.get_best_pairing(t_f_given_e, fs, es_2))
     e_given_f_rev = [(y,x) for x,y in e_given_f_pairing]
 
     phrase_alignment = ibm_models.get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev)
@@ -198,22 +195,32 @@ def get_phrase_alignment_2(t_e_given_f,d_e_given_f, t_f_given_e, d_f_given_e, fs
         phrase_alignment = [(f-1,e-1) for f,e in phrase_alignment if f*e != 0]
     return phrase_alignment
 
+
 def print_specific_d(d,l,m):
     for j in range(m):
         print(j,d[(j,l,m)])
 
+
 def get_phrase_table_m2(sentence_pairs,m1_loop_count,m2_loop_count,null_flag=True):
     test_index = 3
     test_pairs = sentence_pairs[test_index]
+    rev_pairs = [(y,x) for x,y in sentence_pairs]
 
     # t_e_given_f,d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag,t_filename="t_1.txt")
     t_e_given_f,d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag)
+    t_f_given_e,d_f_given_e = train(rev_pairs     ,m1_loop_count,m2_loop_count,null_flag)
 
-    rev_pairs = [(y,x) for x,y in sentence_pairs]
+    test_align =ibm_models.get_best_pairing(t_e_given_f,test_pairs[0],test_pairs[1],d_e_given_f)
+    print(test_align)
+    test_models.print_alignment(test_align,test_pairs)
     # t_f_given_e,d_f_given_e = train(rev_pairs,m1_loop_count,m2_loop_count,null_flag,t_filename="t_2.txt")
-    t_f_given_e,d_f_given_e = train(rev_pairs,m1_loop_count,m2_loop_count,null_flag)
+
+    test_align =ibm_models.get_best_pairing(t_f_given_e,test_pairs[1],test_pairs[0],d_f_given_e)
+    print(test_align)
+    test_models.print_alignment(test_align,test_pairs)
 
     alignments = [get_phrase_alignment_2(t_e_given_f, d_e_given_f, t_f_given_e, d_f_given_e, es,fs,null_flag) for fs,es in sentence_pairs]
+    print(alignments)
     test_models.print_alignment([(y, x) for x, y in alignments[test_index]], test_pairs)
     print(ibm_models.get_phrases([(y, x) for x, y in alignments[test_index]], test_pairs[0], test_pairs[1]))
     return ibm_models.get_phrase_probabilities(alignments, sentence_pairs)

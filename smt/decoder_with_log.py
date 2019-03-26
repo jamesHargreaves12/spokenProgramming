@@ -1,4 +1,6 @@
 from heapq import heappop,heappush,heappushpop
+
+from log_module import write_to_log
 from smt import ibmmodel1
 from langModel.faster_lang_model import LanguageModel
 import time
@@ -210,7 +212,7 @@ def beam_search_stack_decoder(source,lang_model,log_phrase_table):
         if stack:
             best_hype_so_far = stack[0]
         score_of_best = -inf
-
+        print("{} / {} \n".format(i,len_source))
         if i == len_source:
             break
         if i != 0 and __name__ != "__main__" and print_on:

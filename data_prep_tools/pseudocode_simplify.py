@@ -127,7 +127,7 @@ def simplified_output(tree, variable_list):
         elif str(data) == "[]":
             return "EMPTY_LIST"
         elif str(data) == "\"\\n\"":
-            return "NEWLINE"
+            return "STRING_CONST"
         elif re.match("^\".*\"$",str(data)):
             return "STRING_CONST"
         elif re.match("^[0-9]+.{0,1}[0-9]*$",str(data)):

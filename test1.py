@@ -1,8 +1,11 @@
 import math
+import gc
+from decimal import Decimal
 
 import generate_folds
 from baseline import baseline_functions
 from langModel.faster_lang_model import LanguageModel
+from log_module import write_to_log
 from smt import smt_functions, decoder_with_log
 from tools.minimum_edit_distance import minimum_edit_distance
 
@@ -10,7 +13,7 @@ def flatten(lss):
     return [item for sublist in lss for item in sublist]
 
 
-sentence_pair_folds = generate_folds.get_folds(5, "SEQ")
+sentence_pair_folds = generate_folds.get_folds(10, "SEQ")
 validation_set = sentence_pair_folds[-1]
 train_test_folds = sentence_pair_folds[:-1]
 train_test_data = flatten(train_test_folds)
@@ -69,13 +72,16 @@ def validate_baseline():
 # S? False (x,fx) (0.1, 485)
 
 
+
 def total_edit_distance_smt(test_pairs, alpha, omega, lang_model, log_phrase_table):
     total_dist = 0
     decoder_with_log.set_alpha(alpha)
     decoder_with_log.set_omega(omega)
     for trans,pseudo in test_pairs:
+        gc.collect()
         prediction = smt_functions.run_smt(lang_model,log_phrase_table,trans)
         print(prediction)
+        write_to_log("predict: {}\n".format(prediction))
         predicted_toks = prediction.split(" ")
         total_dist += minimum_edit_distance(predicted_toks,pseudo)
     return total_dist
@@ -90,17 +96,66 @@ def total_edit_distance_smt(test_pairs, alpha, omega, lang_model, log_phrase_tab
 # n = {1,2,3,4,5,6}
 # alpha = (0,1)
 # omega > 1
-n = 2
-epoch = 100
-null_flag = True
-lang_model = smt_functions.get_language_model(train_test_data,n)
-log_phrase_table = smt_functions.get_log_phrase_table1(train_test_data,epoch,null_flag)
-for alpha in [i/10 for i in range(1,10)]:
-    for omega in  [i/2 for i in range(1,6)]:
-        print("alpha,omega",alpha,omega)
-        print(total_edit_distance_smt(validation_set, alpha, omega, lang_model, log_phrase_table))
+def compute_perplexity_of_sentance(pseud_sentance,lang_model:LanguageModel):
+    perplexity = lang_model.get_prob_sentance(pseud_sentance)
+    oom = math.floor(math.log(perplexity, 10))
+    # print(perplexity)
+    # print(oom)
+    return perplexity
 
 
+
+
+def compute_perplexity():
+    for n in range(1,7):
+        print(n)
+        lang_model = smt_functions.get_language_model(train_test_data,n)
+        total = 1
+        for _,p in validation_set:
+            total *= Decimal(compute_perplexity_of_sentance(p,lang_model))
+        print("total",total)
+# compute_perplexity()
+# best is n = 2
+
+def validate_ibmmode1():
+    n = 2
+    epoch = 100
+    null_flag = True
+    lang_model = smt_functions.get_language_model(train_test_data,n)
+    log_phrase_table = smt_functions.get_log_phrase_table1(train_test_data,epoch,null_flag)
+    for alpha in [i/10 for i in range(5,10)]:
+        for omega in [i/2 for i in range(1,6)]:
+            if alpha == 0.5 and omega == 0.5:
+                print("skipped as alread have result")
+                continue
+            message = "alpha {} omega {}\n".format(alpha, omega)
+            write_to_log(message)
+            print("alpha,omega",alpha,omega)
+            ted = total_edit_distance_smt(validation_set, alpha, omega, lang_model, log_phrase_table)
+            print(ted)
+            write_to_log("Edit distance = {}".format(ted))
+# validate_ibmmode1()
+# alpha = 0.5, omega = 0.5 => ED = 1064
+
+
+
+
+
+def validate_ibmmodel2():
+    n = 2
+    epoch = 100
+    null_flag = True
+    lang_model = smt_functions.get_language_model(train_test_data,n)
+    log_phrase_table = smt_functions.get_log_phrase_table2(train_test_data,epoch,null_flag)
+    for alpha in [i/10 for i in range(1,10)]:
+        for omega in [i/2 for i in range(1,6)]:
+            message = "alpha {} omega {}\n".format(alpha, omega)
+            write_to_log(message)
+            print("alpha,omega",alpha,omega)
+            ted = total_edit_distance_smt(validation_set, alpha, omega, lang_model, log_phrase_table)
+            print(ted)
+            write_to_log("Edit distance = {}".format(ted))
+validate_ibmmodel2()
 
 
 

@@ -1,8 +1,9 @@
 import csv
 import re
+
+from baseline.constants import NOT_A_TOKEN_IN_USE
 from data_prep_tools import get_data
 from tools.find_resource_in_project import get_path
-
 
 def get_programming_symbols_map():
     # source = https://blog.codinghorror.com/ascii-pronunciation-rules-for-programmers/
@@ -78,20 +79,18 @@ def get_programming_symbols_map():
     return symbol_to_name
 
 
-def get_pseudocode_tokens(pseudocode_toks_list=None):
+def get_pseudocode_tokens(tokenized_pseudocode_files=None):
     tokens_present = set()
-    if not pseudocode_toks_list:
+    if not tokenized_pseudocode_files:
         pseudocode_list = get_data.get_data_from_directory("/pseudocode_simplified/")
-        pseudocode_toks_list = [x.split(" ") for x in pseudocode_list]
-    for tokens in pseudocode_toks_list:
-        for token in tokens:
+        tokenized_pseudocode_files = [x.split(" ") for x in pseudocode_list]
+    for pseudocode_file in tokenized_pseudocode_files:
+        for token in pseudocode_file:
             if len(token) > 1 and not token[0].isalpha() and not token[0].isdigit():
                 tokens_present.add(token[0])
                 token = token[1:]
-            if len(token) > 1 and not token[-1].isalpha() and not token[-1].isdigit():
-                tokens_present.add(token[1])
-                token = token[:-1]
-            tokens_present.add(token)
+            if len(token) > 1:
+                tokens_present.add(token)
 
     symbol_to_name = get_programming_symbols_map()
     token_to_symbol = {}
@@ -101,9 +100,6 @@ def get_pseudocode_tokens(pseudocode_toks_list=None):
         if token in symbol_to_name.keys():
             for name in symbol_to_name[token]:
                 token_to_symbol[name] = token
-        elif token == "NEWLINE":
-            token_to_symbol["new line"] = token
-            token_to_symbol["backslash n"] = token
         elif token == "EMPTY_LIST":
             token_to_symbol["empty list"] = token
             token_to_symbol["empty"] = token
@@ -111,18 +107,19 @@ def get_pseudocode_tokens(pseudocode_toks_list=None):
             token_to_symbol[token] = token
 
 
-    # this is a horrid hack for now - should be implemented as a negative list
-    token_to_symbol["end for"] = "NOT_A_TOKEN"
-    token_to_symbol["end if"] = "NOT_A_TOKEN"
-    token_to_symbol["end the if"] = "NOT_A_TOKEN"
-    token_to_symbol["end the for"] = "NOT_A_TOKEN"
-    token_to_symbol["increment"] = "+="
-    token_to_symbol["decrement"] = "-="
-    token_to_symbol["different than"] = "!="
-    token_to_symbol["position"] = "index"
-    token_to_symbol["location"] = "index"
-    token_to_symbol["key"] = "index"
-    token_to_symbol["otherwise"] = "else"
+    if NOT_A_TOKEN_IN_USE:
+        # this is a horrid hack for now - should be implemented as a negative list
+        token_to_symbol["end for"] = "NOT_A_TOKEN"
+        token_to_symbol["end if"] = "NOT_A_TOKEN"
+        token_to_symbol["end the if"] = "NOT_A_TOKEN"
+        token_to_symbol["end the for"] = "NOT_A_TOKEN"
+    # token_to_symbol["increment"] = "+="
+    # token_to_symbol["decrement"] = "-="
+    # token_to_symbol["different than"] = "!="
+    # token_to_symbol["position"] = "index"
+    # token_to_symbol["location"] = "index"
+    # token_to_symbol["key"] = "index"
+    # token_to_symbol["otherwise"] = "else"
     return token_to_symbol
 
 if __name__ == "__main__":
