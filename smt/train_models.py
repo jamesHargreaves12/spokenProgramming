@@ -10,7 +10,7 @@ def print_alignment(align,max_e,max_f):
             if (e,f) in align:
                 print_str += "x "
             else:
-                print_str += "o "
+                print_str += ". "
         print(print_str)
 
 transcripts = get_data.get_data_from_directory("/transcripts_var_replaced/")

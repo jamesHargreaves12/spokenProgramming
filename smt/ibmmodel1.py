@@ -2,6 +2,7 @@ from itertools import product
 from collections import defaultdict
 from smt import ibm_models, test_models
 from smt.ibm_models import get_best_pairing
+from smt.test_models import print_alignment
 from tools.find_resource_in_project import get_path
 
 
@@ -75,6 +76,29 @@ def get_alignments_1(sentence_pairs,epoch=100,null_flag=True):
     t_e_given_f = train(sentence_pairs,epoch,null_flag)
     rev_pairs = [(y,x) for x,y in sentence_pairs]
     t_f_given_e = train(rev_pairs,epoch,null_flag)
+    print(t_e_given_f[('a','b')])       # 0.004761904761904762
+    print(t_e_given_f[('times','*')])   # 0.2406706594305446
+    print(t_e_given_f[('NULL','*')])    # 6.364248826512972e-07
+    print(t_e_given_f[('times','NULL')])# 0.004761904761904762
+
+    print(t_f_given_e[('a','b')])       # 0.01694915254237288
+    print(t_f_given_e[('*','times')])   # 0.9999821596966731
+    print(t_f_given_e[('NULL','times')])# 1.3306602398186e-06
+    print(t_f_given_e[('*','NULL')])    # 0.01694915254237288
+    for fs,es in sentence_pairs[0:4]:
+        f_given_e_pairing = ibm_models.get_best_pairing(t_f_given_e, fs, ["NULL"]+es)
+        f_given_e_pairing = [(f, e - 1) for f, e in f_given_e_pairing if e != 0]
+
+        e_given_f_pairing = ibm_models.get_best_pairing(t_e_given_f, es, ["NULL"]+fs)
+        e_given_f_pairing = [(e, f - 1) for e, f in e_given_f_pairing if f != 0]
+        e_given_f_rev = [(y, x) for x, y in e_given_f_pairing]
+
+        phrase_alignment = ibm_models.get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev)
+
+        print_alignment(f_given_e_pairing,(fs,es))
+        print_alignment(e_given_f_pairing,(es,fs))
+        print_alignment(phrase_alignment,(fs,es))
+
     return [get_phrase_alignment(t_e_given_f,t_f_given_e,fs,es,null_flag) for fs,es in sentence_pairs]
 
 

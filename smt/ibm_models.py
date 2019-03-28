@@ -129,8 +129,6 @@ def get_best_pairing(t_f_given_e, fs:list, es:list, d_f_given_e=None,null_flag=F
         for i,e in enumerate(es):
             score = t_f_given_e[(f,e)]
             if d_f_given_e:
-                # TODO think this could be a mistake on the length of es and fs?
-                # d_f_given_e[(j,len(es),len(fs))][i]
                 l = len(es)
                 m = len(fs)
                 if null_flag:
