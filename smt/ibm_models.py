@@ -1,9 +1,55 @@
 from collections import defaultdict
 from math import inf,log
+from scipy.stats import norm
 
 from tools.find_resource_in_project import get_path
 
 PREVENT_VARIABLE_TO_NULL_MAP = True
+
+
+D_SIGMA = lambda x: x/1.96
+d_cache = {}
+d_cache_path = get_path("/default_d_cache/cache.txt")
+
+
+def load_d_cache():
+    count = 0
+    with open(d_cache_path, "r") as file:
+        for line in file.readlines():
+            count += 1
+            line.strip("\n")
+            maps = line.split(" ")
+            if len(maps) < 5:
+                print(count,maps,line)
+            d_cache[(int(maps[0]),int(maps[1]),int(maps[2]),int(maps[3]))] = float(maps[4])
+
+
+load_d_cache()
+d_cache_file = open(d_cache_path, "a")
+def default_d(i,j,l,m):
+    if (i,j,l,m) in d_cache:
+        return d_cache[(i,j,l,m)]
+    # l = len e
+    # m = len f
+    # i -> e
+    # j -> f
+    sigma = D_SIGMA(l/2)
+    mu = j * (l-1) / (m-1)
+    start = ((i - 0.5) - mu) / sigma
+    end = ((i + 0.5) - mu) / sigma
+    total_start = ((-0.5) - mu) / sigma
+    total_end = ((l - 0.5) - mu) / sigma
+    # print(start,end,total_start,total_end,mu,sigma)
+    value = (norm.cdf(end) - norm.cdf(start))/(norm.cdf(total_end) - norm.cdf(total_start))
+    d_cache_file.write(str(i) + " " + str(j) + " " + str(l) + " " + str(m) + " " + str(value) + "\n")
+    return value
+
+
+def d_fn(d_dict:dict,i,j,l,m):
+    if((j,l,m) in d_dict and i in d_dict[(j,l,m)]):
+        return d_dict[(j,l,m)][i]
+    return default_d(i,j,l,m)
+
 
 def prune_phrase_table(phrase_table, e_max_length=-1, f_max_length=-1):
     f_deletes = []
@@ -75,7 +121,7 @@ def get_log_phrase_table(phrase_table):
     return log_phrase_table
 
 
-def get_best_pairing(t_f_given_e, fs, es, d_f_given_e=None):
+def get_best_pairing(t_f_given_e, fs:list, es:list, d_f_given_e=None,null_flag=False):
     alignment = set()
     for j,f in enumerate(fs):
         max_score = -1
@@ -83,11 +129,19 @@ def get_best_pairing(t_f_given_e, fs, es, d_f_given_e=None):
         for i,e in enumerate(es):
             score = t_f_given_e[(f,e)]
             if d_f_given_e:
-                score *= d_f_given_e[(j,len(es),len(fs))][i]
-            if score >= max_score and not (PREVENT_VARIABLE_TO_NULL_MAP and f.startswith("VARIABLE") and e == "NULL"):
+                # TODO think this could be a mistake on the length of es and fs?
+                # d_f_given_e[(j,len(es),len(fs))][i]
+                l = len(es)
+                m = len(fs)
+                if null_flag:
+                    # to account for the fact that we dont want the null flag to skew
+                    score *= d_fn(d_f_given_e,j,i-1,m,l-1)
+                else:
+                    score *= d_fn(d_f_given_e,i,j,l,m)
+            if score > max_score and not (PREVENT_VARIABLE_TO_NULL_MAP and f.startswith("VARIABLE") and e == "NULL"):
                 max_score = score
                 max_index = i
-        if max_score  == -1:
+        if max_score == -1:
             print("ISSUE with pairing")
         else:
             alignment.add((j,max_index))
@@ -113,28 +167,31 @@ def in_unique_row_col(point,cur_points):
 
 
 def get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev):
-    # print(f_given_e_pairing)
-    # print(e_given_f_rev)
+    f_given_e_pairing = set(f_given_e_pairing)
+    e_given_f_rev = set(e_given_f_rev)
     alignment = f_given_e_pairing.intersection(e_given_f_rev)
-    # print(alignment)
+
     union = f_given_e_pairing.union(e_given_f_rev).difference(alignment)
     to_check_stack = list(alignment)
     # diagonal
-    while to_check_stack:
-        point = to_check_stack.pop()
-        for neighbour in union.intersection(get_neighbours(point)):
-            unique_row,unique_col = in_unique_row_col(neighbour,alignment)
-            if unique_row or unique_col:
-                alignment.add(neighbour)
-                to_check_stack.append(neighbour)
-                union.remove(neighbour)
+    # TODO not sure this is working either (DIAG function choosing points not in union
+    to_check = True
+    while to_check:
+        to_check = False
+        for point in alignment.copy():
+            # point = to_check_stack.pop()
+            for neighbour in union.intersection(get_neighbours(point)).difference(alignment):
+                unique_row,unique_col = in_unique_row_col(neighbour,alignment)
+                if unique_row or unique_col:
+                    alignment.add(neighbour)
+                    to_check = True
+                    # to_check_stack.append(neighbour)
+                    # union.remove(neighbour)
     #finalise
     for point in union:
         unique_row, unique_col = in_unique_row_col(point, alignment)
         if unique_row and unique_col:
             alignment.add(point)
-    # print("end")
-    # print(alignment)
     return alignment
 
 

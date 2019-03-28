@@ -1,12 +1,13 @@
 from itertools import product
 from collections import defaultdict
-from smt import ibm_models
+from smt import ibm_models, test_models
+from smt.ibm_models import get_best_pairing
 from tools.find_resource_in_project import get_path
 
 
 def get_initial(sentance_pairs):
     e_lexicon = set()
-    for _,e in sentance_pairs:
+    for e,_ in sentance_pairs:
         e_lexicon.update(e)
     uniform = 1/len(e_lexicon)
     t_initial = defaultdict(lambda:uniform)
@@ -20,7 +21,7 @@ def get_next_t_estimate(sentence_pairs, t):
     total = defaultdict(float)
     lexicon_e = set()
     lexicon_f = set()
-    for fs,es in sentence_pairs:
+    for es,fs in sentence_pairs:
         s_total = defaultdict(float)
         for f,e in product(fs,es):
             s_total[e] += t[(e,f)]
@@ -49,25 +50,35 @@ def get_phrase_alignment(t_e_given_f, t_f_given_e, fs, es, null_flag=True):
     # http://ivan-titov.org/teaching/elements.ws13-14/elements-7.pdf alg from here
     # likely can be improved using a data structure
     if null_flag:
-        fs = ["NULL"] + fs
-        es = ["NULL"] + es
+        fs_null = ["NULL"] + fs
+        es_null = ["NULL"] + es
 
-    f_given_e_pairing = ibm_models.get_best_pairing(t_f_given_e, fs, es)
-    e_given_f_pairing = ibm_models.get_best_pairing(t_e_given_f, es, fs)
-    e_given_f_rev = [(y,x) for x,y in e_given_f_pairing]
+        f_given_e_pairing = ibm_models.get_best_pairing(t_f_given_e, fs, es_null)
+        f_given_e_pairing = [(f,e-1) for f,e in f_given_e_pairing if e != 0]
 
-    phrase_alignment = ibm_models.get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev)
-    if null_flag:
-        # if maps to null then drop it in either direction and reduce the index by 1
-        phrase_alignment = [(f-1,e-1) for f,e in phrase_alignment if f*e != 0]
-    return phrase_alignment
+        e_given_f_pairing = ibm_models.get_best_pairing(t_e_given_f, es, fs_null)
+        e_given_f_pairing = [(e,f-1) for e,f in e_given_f_pairing if f != 0]
+        e_given_f_rev = [(y,x) for x,y in e_given_f_pairing]
+
+        phrase_alignment = ibm_models.get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev)
+        return phrase_alignment
+    else:
+        f_given_e_pairing = ibm_models.get_best_pairing(t_f_given_e, fs, es)
+        e_given_f_pairing = ibm_models.get_best_pairing(t_e_given_f, es, fs)
+        e_given_f_rev = [(y,x) for x,y in e_given_f_pairing]
+
+        phrase_alignment = ibm_models.get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev)
+        return phrase_alignment
 
 
-def get_phrase_table_m1(sentence_pairs,epoch=100,null_flag=True):
+def get_alignments_1(sentence_pairs,epoch=100,null_flag=True):
     t_e_given_f = train(sentence_pairs,epoch,null_flag)
     rev_pairs = [(y,x) for x,y in sentence_pairs]
     t_f_given_e = train(rev_pairs,epoch,null_flag)
-    alignments = [get_phrase_alignment(t_e_given_f,t_f_given_e,fs,es,null_flag) for fs,es in sentence_pairs]
+    return [get_phrase_alignment(t_e_given_f,t_f_given_e,fs,es,null_flag) for fs,es in sentence_pairs]
+
+
+def get_phrase_table_m1(alignments,sentence_pairs):
     return ibm_models.get_phrase_probabilities(alignments, sentence_pairs)
 
 

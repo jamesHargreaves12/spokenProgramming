@@ -9,7 +9,8 @@ def get_language_model(train_data,n):
 
 # Constants = epoch,null_flag
 # from ibmmodels (applies also to model2) = PREVENT_VARIABLE_TO_NULL_MAP
-def train_ibmmodel1(sentance_pairs,epoch,null_flag):
+def get_log_table_1(sentance_pairs,epoch,null_flag):
+    alignments = get_alignments_1(sentence_pairs,epoch,null_flag)
     return ibmmodel1.get_phrase_table_m1(sentance_pairs, epoch, null_flag)
 
 def get_log_phrase_table1(sentance_pairs,epoch,null_flag):
