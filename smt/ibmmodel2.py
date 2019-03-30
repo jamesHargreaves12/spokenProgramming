@@ -2,6 +2,7 @@ from collections import defaultdict
 from itertools import product
 from math import inf
 from smt import test_models, ibm_models, ibmmodel1
+from smt.test_models import print_alignment
 from tools.find_resource_in_project import get_path
 
 
@@ -10,7 +11,7 @@ def get_initial_t(sentence_pairs, m1_loop_count, null_flag=True):
     return ibmmodel1.train(sentence_pairs, m1_loop_count, null_flag=null_flag)
 
 
-def get_next_estimate(t:dict, d:dict, sentence_pairs, null_flag):
+def get_next_estimate(t_e_given_f:dict, d_e_given_f:dict, sentence_pairs, null_flag):
     # http://www.ai.mit.edu/courses/6.891-nlp/l11.pdf
     # get the alignment probabilities
     a_ijk = {}
@@ -34,7 +35,7 @@ def get_next_estimate(t:dict, d:dict, sentence_pairs, null_flag):
         for j in range(m):
             total_for_i = 0
             for i in range(l):
-                a_ijk[(i,j,k)] = ibm_models.d_fn(d,i,j-1,l,m-1)*t[es[i],fs[j]]
+                a_ijk[(i,j,k)] = ibm_models.d_fn(d_e_given_f, i, j - 1, l, m - 1) * t_e_given_f[es[i], fs[j]]
                 total_for_i += a_ijk[(i,j,k)]
             # normalise
             if total_for_i > 0:
@@ -55,9 +56,9 @@ def get_next_estimate(t:dict, d:dict, sentence_pairs, null_flag):
                 a_count[(i,j,l,m)] += a_ijk[(i,j,k)]
                 tot_a_count[(j,l,m)] += a_ijk[(i,j,k)]
     # Re-estimate the paramaters
-    d = defaultdict(lambda: defaultdict(float))
+    d_e_given_f = defaultdict(lambda: defaultdict(float))
     for e,f in product(lexicon_e,lexicon_f):
-        t[(e,f)] = t_count[(e,f)]/s_count[e]
+        t_e_given_f[(e, f)] = t_count[(e, f)] / s_count[e]
 
     for k in range(n):
         fs,es = sentence_pairs[k]
@@ -67,27 +68,27 @@ def get_next_estimate(t:dict, d:dict, sentence_pairs, null_flag):
             for i in range(l):
                 # if k == 3:
                 #     print(a_count[(i,j,l,m)],tot_a_count[(j,l,m)],l,m)
-                d[(j-1,l,m-1)][i] = a_count[(i,j,l,m)]/tot_a_count[(j,l,m)]
-    return t,d
+                d_e_given_f[(j - 1, l, m - 1)][i] = a_count[(i, j, l, m)] / tot_a_count[(j, l, m)]
+    return t_e_given_f, d_e_given_f
 
 
 def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filename=None):
     print("Train IBM_M1")
-    d = {}
+    d_e_given_f = {}
     if t_filename:
-        t = ibmmodel1.open_t(t_filename)
+        t_e_given_f = ibmmodel1.open_t(t_filename)
     else:
-        t = get_initial_t(sentence_pairs, m1_loop_count, null_flag)
+        t_e_given_f = get_initial_t(sentence_pairs, m1_loop_count, null_flag)
         # ibmmodel1.save_t(t,"t_2.txt")
 
     print("Train IBM_M2")
     if null_flag:
-        sentence_pairs = [(["NULL"]+x,y) for x,y in sentence_pairs]
+        sentence_pairs = [(["NULL"]+f,e) for f,e in sentence_pairs]
     for i in range(m2_loop_count):
         if i % 20 == 19:
             print("Loop:",i+1)
-        t, d = get_next_estimate(t, d, sentence_pairs, null_flag)
-    return t,d
+        t_e_given_f, d_e_given_f = get_next_estimate(t_e_given_f, d_e_given_f, sentence_pairs, null_flag)
+    return t_e_given_f,d_e_given_f
 
 
 def remove_t_maps_to_zero(t):
@@ -143,6 +144,8 @@ def get_phrase_alignment_2(t_e_given_f, d_e_given_f, t_f_given_e, d_f_given_e, f
         e_given_f_pairing = ibm_models.get_best_pairing(t_e_given_f, es, ["NULL"]+fs, d_e_given_f, null_flag)
         e_given_f_pairing = [(e,f-1) for e,f in e_given_f_pairing if f != 0]
         e_given_f_rev = [(y,x) for x,y in e_given_f_pairing]
+        # print_alignment(f_given_e_pairing,(fs,es))
+        # print_alignment(e_given_f_pairing,(es,fs))
         phrase_alignment = ibm_models.get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev)
         return phrase_alignment
     else:
@@ -167,8 +170,8 @@ def get_alignments_2(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=Tru
     return [get_phrase_alignment_2(t_e_given_f, d_e_given_f, t_f_given_e, d_f_given_e, fs, es, null_flag) for fs,es in sentence_pairs]
 
 
-def get_phrase_table_m2(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True):
-    alignments = get_alignments_2(sentence_pairs,m1_loop_count,m2_loop_count,null_flag)
+def get_phrase_table_m2(sentence_pairs, alignments):
+    # alignments = get_alignments_2(sentence_pairs,m1_loop_count,m2_loop_count,null_flag)
     # for i in range(5):
     #     test_pairs = sentence_pairs[i]
     #     get_phrase_alignment_2(t_e_given_f,d_e_given_f,t_f_given_e,d_f_given_e, test_pairs[0], test_pairs[1], null_flag)
@@ -178,9 +181,6 @@ def get_phrase_table_m2(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=
     return ibm_models.get_phrase_probabilities(alignments, sentence_pairs)
 
 
-# sentence_pairs = general.get_sentance_pairs()
-# get_phrase_table_m2(sentence_pairs)
-# ibm_models.save_ phrase_table(t,"new_phrase_table_m2.txt")
 
 if __name__ == "__main__":
     f1 = "le chien".split(" ")

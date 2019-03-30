@@ -4,6 +4,7 @@ from smt.general import get_sentance_pairs
 
 # Constants = n
 from smt.ibmmodel1 import get_alignments_1
+from smt.test_models import print_alignment
 
 
 def get_language_model(train_data,n):
@@ -28,14 +29,18 @@ def get_log_phrase_table1(sentance_pairs,alignments):
 # Constants in File = D_SIGMA
 # prune Constants = e_max_length, f_max_length
 # sentance_pairs are zipped
-def train_ibmmodel2(sentance_pairs,epoch,null_flag):
-    phrase_t = ibmmodel2.get_phrase_table_m2(sentance_pairs,epoch,epoch,null_flag)
-    ibm_models.prune_phrase_table(phrase_t, e_max_length=9, f_max_length=15)
+def get_alignment_2(sentence_pairs: list, epoch: int, null_flag: bool):
+    align = ibmmodel2.get_alignments_2(sentence_pairs, epoch, epoch, null_flag)
+    return align
+
+def get_p_table2(sentance_pairs,alignment):
+    phrase_t = ibmmodel2.get_phrase_table_m2(sentance_pairs,alignment)
     return phrase_t
 
 # sentance_pairs are zipped
-def get_log_phrase_table2(sentance_pairs,epoch,null_flag):
-    phrase_t = train_ibmmodel2(sentance_pairs,epoch,null_flag)
+def get_log_phrase_table2(sentance_pairs,alignments):
+    phrase_t = get_p_table2(sentance_pairs,alignments)
+    ibm_models.prune_phrase_table(phrase_t, e_max_length=9, f_max_length=15)
     return ibm_models.get_log_phrase_table(phrase_t)
 
 

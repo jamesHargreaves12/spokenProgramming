@@ -7,44 +7,44 @@ from tools.find_resource_in_project import get_path
 
 
 def get_initial(sentance_pairs):
-    e_lexicon = set()
-    for e,_ in sentance_pairs:
-        e_lexicon.update(e)
-    uniform = 1/len(e_lexicon)
+    f_lexicon = set()
+    for f,_ in sentance_pairs:
+        f_lexicon.update(f)
+    uniform = 1/len(f_lexicon)
     t_initial = defaultdict(lambda:uniform)
     return t_initial
 
 
-def get_next_t_estimate(sentence_pairs, t):
+def get_next_t_estimate(sentence_pairs, t_e_given_f):
     # using algoritm from http://mt-class.org/jhu/slides/lecture-ibm-model1.pdf
     # gives t(e|f)
     count = defaultdict(float)
     total = defaultdict(float)
     lexicon_e = set()
     lexicon_f = set()
-    for es,fs in sentence_pairs:
+    for fs,es in sentence_pairs:
         s_total = defaultdict(float)
         for f,e in product(fs,es):
-            s_total[e] += t[(e,f)]
+            s_total[e] += t_e_given_f[(e, f)]
             lexicon_e.add(e)
             lexicon_f.add(f)
         for f,e in product(fs,es):
-            count[(e,f)] += t[(e,f)]/s_total[e]
-            total[f] += t[(e,f)]/s_total[e]
+            count[(e,f)] += t_e_given_f[(e, f)] / s_total[e]
+            total[f] += t_e_given_f[(e, f)] / s_total[e]
     for f,e in product(lexicon_f,lexicon_e):
-        t[(e,f)] = count[(e,f)]/total[f]
-    return t
+        t_e_given_f[(e, f)] = count[(e, f)] / total[f]
+    return t_e_given_f
 
 
 def train(sentence_pairs, loop_count, null_flag=True):
     if null_flag:
         sentence_pairs = [(["NULL"]+f,e) for f,e in sentence_pairs]
-    t = get_initial(sentence_pairs)
+    t_e_given_f = get_initial(sentence_pairs)
     for i in range(loop_count):
         if i % 20 == 19 and __name__ != "__main__":
             print("Loop: "+str(i+1))
-        t = get_next_t_estimate(sentence_pairs,t)
-    return t
+        t_e_given_f = get_next_t_estimate(sentence_pairs,t_e_given_f)
+    return t_e_given_f
 
 
 def get_phrase_alignment(t_e_given_f, t_f_given_e, fs, es, null_flag=True):
@@ -76,29 +76,20 @@ def get_alignments_1(sentence_pairs,epoch=100,null_flag=True):
     t_e_given_f = train(sentence_pairs,epoch,null_flag)
     rev_pairs = [(y,x) for x,y in sentence_pairs]
     t_f_given_e = train(rev_pairs,epoch,null_flag)
-    print(t_e_given_f[('a','b')])       # 0.004761904761904762
-    print(t_e_given_f[('times','*')])   # 0.2406706594305446
-    print(t_e_given_f[('NULL','*')])    # 6.364248826512972e-07
-    print(t_e_given_f[('times','NULL')])# 0.004761904761904762
-
-    print(t_f_given_e[('a','b')])       # 0.01694915254237288
-    print(t_f_given_e[('*','times')])   # 0.9999821596966731
-    print(t_f_given_e[('NULL','times')])# 1.3306602398186e-06
-    print(t_f_given_e[('*','NULL')])    # 0.01694915254237288
-    for fs,es in sentence_pairs[0:4]:
-        f_given_e_pairing = ibm_models.get_best_pairing(t_f_given_e, fs, ["NULL"]+es)
-        f_given_e_pairing = [(f, e - 1) for f, e in f_given_e_pairing if e != 0]
-
-        e_given_f_pairing = ibm_models.get_best_pairing(t_e_given_f, es, ["NULL"]+fs)
-        e_given_f_pairing = [(e, f - 1) for e, f in e_given_f_pairing if f != 0]
-        e_given_f_rev = [(y, x) for x, y in e_given_f_pairing]
-
-        phrase_alignment = ibm_models.get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev)
-
-        print_alignment(f_given_e_pairing,(fs,es))
-        print_alignment(e_given_f_pairing,(es,fs))
-        print_alignment(phrase_alignment,(fs,es))
-
+    # for fs,es in sentence_pairs[0:4]:
+    #     f_given_e_pairing = ibm_models.get_best_pairing(t_f_given_e, fs, ["NULL"]+es)
+    #     f_given_e_pairing = [(f, e - 1) for f, e in f_given_e_pairing if e != 0]
+    #
+    #     e_given_f_pairing = ibm_models.get_best_pairing(t_e_given_f, es, ["NULL"]+fs)
+    #     e_given_f_pairing = [(e, f - 1) for e, f in e_given_f_pairing if f != 0]
+    #     e_given_f_rev = [(y, x) for x, y in e_given_f_pairing]
+    #
+    #     phrase_alignment = ibm_models.get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev)
+    #
+    #     print_alignment(f_given_e_pairing,(fs,es))
+    #     print_alignment(e_given_f_pairing,(es,fs))
+    #     print_alignment(phrase_alignment,(fs,es))
+    #
     return [get_phrase_alignment(t_e_given_f,t_f_given_e,fs,es,null_flag) for fs,es in sentence_pairs]
 
 

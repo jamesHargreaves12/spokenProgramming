@@ -1,6 +1,5 @@
 from heapq import heappop,heappush,heappushpop
 
-from log_module import write_to_log
 from smt import ibmmodel1
 from langModel.faster_lang_model import LanguageModel
 import time
@@ -130,7 +129,7 @@ def log_future_cost(hyp_bounds, source:list, phrase_to_max_log_prob):
 
 
 def get_new_hyps(current_bounds,log_phrase_table,source,len_source):
-    # might be an idea to precomute the possible phrases
+    # might be an idea to pre-compute the possible phrases
     new_hyps = []
     used_word_count = len_source
     for start,end in current_bounds:

@@ -1,1 +1,0 @@
-alpha 0.5 omega 1.0

@@ -217,13 +217,13 @@ def graph_break_1(graph:DependencyGraph):
     # token signifies new tree
     enforce_order_on_split = True
     for edge in graph.get_edges_with_dependent_token("return"):
-        break_graph(graph,edge,True)
+        break_graph(graph,edge, True)
     for edge in graph.get_edges_with_dependent_token("for"):
-        break_graph(graph,edge,True)
+        break_graph(graph,edge, True)
     for edge in graph.get_edges_with_dependent_token("while"):
-        break_graph(graph,edge,True)
+        break_graph(graph,edge, True)
     for edge in graph.get_edges_with_dependent_token("if"):
-        break_graph(graph,edge,True)
+        break_graph(graph,edge, True)
     for edge in graph.get_edges_with_dependent_token("else"):
         break_graph(graph, edge, True)
     for edge in graph.get_edges_with_dependent_token("set"):

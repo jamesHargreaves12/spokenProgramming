@@ -57,6 +57,8 @@ from smt.ibm_models import get_best_pairing
 # test_models.print_alignment(pairing1,test_pair)
 # test_models.print_alignment(pairing2,(test_pair[1],test_pair[0]))
 
+print([1,2,3,4,5][3:4])
+
 alignment = [(0,0),(0,1),(1,2),(2,3),(3,3),(4,5),(5,4)]
 
 

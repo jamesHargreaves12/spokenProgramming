@@ -244,6 +244,7 @@ def get_next_context(cur_context, token,child_num):
     else :
         print("get_next_context uncovered case:",token,cur_context)
 
+
 def filter_graph(graph:DependencyGraph, root, context):
     token = root["token"]
     root_orig_index = root["orig_index"]
@@ -258,6 +259,7 @@ def filter_graph(graph:DependencyGraph, root, context):
     assert root["token"]==token, "token changed: " + token
     if token in filter_mapping and context not in filter_mapping[token]:
         graph.remove_vertex_with_child_promote(root)
+
 
 def transform_graph(graph:DependencyGraph, root, context):
     orig_indicies = [x["orig_index"] for x in graph.get_children(root)]
