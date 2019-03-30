@@ -1,5 +1,6 @@
 from data_prep_tools import get_data
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
+from data_prep_tools.constants import base_dir
+
 file_map = get_data.get_file_map("transcripts_var_replaced")
 
 for current_dir in range(11, 17):

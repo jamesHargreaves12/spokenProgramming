@@ -1,6 +1,6 @@
 from pseudocode_lang_1 import pseudo_lex
 from data_prep_tools.do_to_all_files import do_to_all_files
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
+from data_prep_tools.constants import base_dir
 
 
 def transform(data):

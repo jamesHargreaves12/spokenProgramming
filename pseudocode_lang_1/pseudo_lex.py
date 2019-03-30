@@ -1,6 +1,6 @@
 import ply.lex as lex
 import os
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
+from data_prep_tools.constants import base_dir
 
 tokens = [
     'ADD_ASSIGN',

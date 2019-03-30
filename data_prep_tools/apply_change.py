@@ -1,8 +1,8 @@
 import re
 from pseudocode_lang_1 import pseudo_yacc
 from data_prep_tools import get_data
+from data_prep_tools.constants import base_dir
 
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
 file_map = {}
 replacements = {r"([a-z]?)'([a-z]?)" : r"\1\2"}
 

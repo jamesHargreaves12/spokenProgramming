@@ -1,6 +1,5 @@
 import os
-
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
+from data_prep_tools.constants import base_dir
 
 transcript_count = 0
 response_id_to_count = {}

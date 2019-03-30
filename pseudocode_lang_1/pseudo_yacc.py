@@ -1,8 +1,8 @@
 from pseudocode_lang_1 import pseudo_lex
 import os
 import ply.yacc as yacc
+from data_prep_tools.constants import base_dir
 
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
 tokens = pseudo_lex.tokens
 lexer = pseudo_lex.lexer
 # PROBS wanna lable all the tuples if using

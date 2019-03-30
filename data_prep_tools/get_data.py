@@ -1,5 +1,5 @@
 import os
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
+from data_prep_tools.constants import base_dir
 
 def get_data_from_directory(dir_name, base_dir_path=None):
     if not base_dir_path:

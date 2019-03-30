@@ -204,7 +204,6 @@ def transform_and_append(x,output_list):
 # transform_and_append(3,output_list)
 # print(output_list)
 #
-# base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData_2/"
 # dir_names = ["audio","transcripts","pseudocode","transcripts_var_replaced","pseudocode_simplified","variable_list"]
 # for i in range(1, 17):
 #     dir = base_dir + str(i)

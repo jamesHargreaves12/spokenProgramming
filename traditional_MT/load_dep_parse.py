@@ -1,6 +1,7 @@
 import re
 from collections import namedtuple,defaultdict
 from data_prep_tools.graph_funs import DependencyGraph
+from data_prep_tools.constants import base_dir
 
 Dependency = namedtuple('Dependency', 'type, head_val, head_position, head_type, dependent_val, dependent_position, dependent_type')
 tokens_re = re.compile(r"\|([\'a-z+0-9_]+?):([0-9]+?)_(([A-Z&0-9]+?)|\$)\|")
@@ -8,7 +9,6 @@ tokens_re = re.compile(r"\|([\'a-z+0-9_]+?):([0-9]+?)_(([A-Z&0-9]+?)|\$)\|")
 dependency_re = re.compile(r"\(\|([\'a-z+0-9_]+?)\|(?: _| \|[a-z]+\|){0,1}(?: \|(?:[\'a-z+0-9_]+):(?:[0-9]+)_(?:[A-Z&0-9]+)\|){0,1} \|([\'a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([\'a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
 
 dependency_extra_info_re = re.compile(r"\(\|([a-z]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\|\)\n")
-base_dir = "/Users/james_hargreaves/Documents/ThirdYear/Part2ProjectData/"
 aritmetic_strings = ["subtract","plus","minus", "over", "time+s","multiply", "multiply+ed", "devide","divide+ed","add","percent"]
 
 # list of head token, tail token to types of relationship you want to combine
