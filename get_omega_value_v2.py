@@ -25,9 +25,10 @@ def validate_ibmmodel2():
     return results
 
 if __name__ == "__main__":
-    # results = validate_ibmmodel2()
-    results = [(0.4,718),(0.5,718),(0.6,718),(0.7,719),(0.8,718),(0.9,719),(1.0,723),(1.2,719),(1.3,719),(1.4,719),(1.5,719),(2.0,719),(2.5,720)]
-    xs = [x for x, _ in results]
-    ys = [y for _, y in results]
-    plt.plot(xs, ys)
-    plt.show()
+    results = validate_ibmmodel2()
+    print(results)
+    # results = [(0.4,718),(0.5,718),(0.6,718),(0.7,719),(0.8,718),(0.9,719),(1.0,723),(1.2,719),(1.3,719),(1.4,719),(1.5,719),(2.0,719),(2.5,720)]
+    # xs = [x for x, _ in results]
+    # ys = [y for _, y in results]
+    # plt.plot(xs, ys)
+    # plt.show()
