@@ -1,7 +1,7 @@
 import re
 from pseudocode_lang_1 import pseudo_yacc
 from data_prep_tools import get_data
-from data_prep_tools.constants import base_dir
+from data_prep_tools.constants import base_dir_2
 
 file_map = {}
 replacements = {r"([a-z]?)'([a-z]?)" : r"\1\2"}
@@ -32,7 +32,7 @@ replacements = {"one hundred": "100",
 # replacements = {r"(([a-z_]+)?)\.append\(((.*)?)\)": r"append(\3,\2)"}
 # replacements = {r" ([a-z]?)th ":r" \1 th "}
 
-file_map = get_data.get_file_map("transcripts", base_dir)
+file_map = get_data.get_file_map("transcripts", base_dir_2)
 
 for current_dir in range(1, 17):
     print('')
@@ -43,7 +43,7 @@ for current_dir in range(1, 17):
     while len(to_go_files) > 0:
         current_file_name = to_go_files.pop(0)
         print(current_file_name)
-        filepath = base_dir + str(current_dir) + "/transcripts/" + current_file_name
+        filepath = base_dir_2 + str(current_dir) + "/transcripts/" + current_file_name
         with open(filepath, 'r+') as datafile:
             data = datafile.read()
         updated = data

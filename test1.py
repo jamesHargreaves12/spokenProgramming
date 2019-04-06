@@ -27,45 +27,45 @@ def total_edit_distance_smt(test_pairs, alpha, omega, lang_model, log_phrase_tab
 # alpha = (0,1)
 # omega > 1
 
-def validate_ibmmode1():
-    n = 2
-    epoch = 100
-    null_flag = True
-    alignments = smt_functions.get_alignment_1(train_test_data,epoch,null_flag)
-    log_phrase_table = smt_functions.get_log_phrase_table1(train_test_data,alignments)
-    lang_model = smt_functions.get_language_model(train_test_data,n)
-    alpha = 0.8027082941508369
-    for omega in [i/2 for i in range(1,6)]:
-        message = "omega {}\n".format(omega)
-        write_to_log(message)
-        print("omega",omega)
-        ted = total_edit_distance_smt(validation_set, alpha, omega, lang_model, log_phrase_table)
-        print(ted)
-        write_to_log("Edit distance = {}".format(ted))
-validate_ibmmode1()
+# def validate_ibmmode1():
+#     n = 2
+#     epoch = 100
+#     null_flag = True
+#     alignments = smt_functions.get_alignment_1(train_test_data,epoch,null_flag)
+#     log_phrase_table = smt_functions.get_log_phrase_table1(train_test_data,alignments)
+#     lang_model = smt_functions.get_language_model(train_test_data,n)
+#     alpha = 0.8027082941508369
+#     for omega in [i/2 for i in range(1,6)]:
+#         message = "omega {}\n".format(omega)
+#         write_to_log(message)
+#         print("omega",omega)
+#         ted = total_edit_distance_smt(validation_set, alpha, omega, lang_model, log_phrase_table)
+#         print(ted)
+#         write_to_log("Edit distance = {}".format(ted))
+#
+#
+# def validate_ibmmodel2():
+#     n = 2
+#     epoch = 100
+#     null_flag = True
+#     alignments = smt_functions.get_alignment_2(train_test_data,epoch,null_flag)
+#     log_phrase_table = smt_functions.get_log_phrase_table2(train_test_data,alignments)
+#     lang_model = smt_functions.get_language_model(train_test_data,n)
+#     # for alpha in [i/10 for i in range(1,10)]:
+#     #     for omega in [i/2 for i in range(1,6)]:
+#     #         message = "alpha {} omega {}\n".format(alpha, omega)
+#     #         write_to_log(message)
+#     #         print("alpha,omega",alpha,omega)
+#     #         ted = total_edit_distance_smt(validation_set, alpha, omega, lang_model, log_phrase_table)
+#     #         print(ted)
+#     #         write_to_log("Edit distance = {}".format(ted))
+#
+
+if __name__ == "__main__":
+    pass
 # alpha = 0.5, omega = 0.5 => ED = 1064
 
-
-def validate_ibmmodel2():
-    n = 2
-    epoch = 100
-    null_flag = True
-    alignments = smt_functions.get_alignment_2(train_test_data,epoch,null_flag)
-    log_phrase_table = smt_functions.get_log_phrase_table2(train_test_data,alignments)
-    lang_model = smt_functions.get_language_model(train_test_data,n)
-    # for alpha in [i/10 for i in range(1,10)]:
-    #     for omega in [i/2 for i in range(1,6)]:
-    #         message = "alpha {} omega {}\n".format(alpha, omega)
-    #         write_to_log(message)
-    #         print("alpha,omega",alpha,omega)
-    #         ted = total_edit_distance_smt(validation_set, alpha, omega, lang_model, log_phrase_table)
-    #         print(ted)
-    #         write_to_log("Edit distance = {}".format(ted))
 # validate_ibmmodel2()
-
-
-
-
 
 
 # backup on github

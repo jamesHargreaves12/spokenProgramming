@@ -1,7 +1,7 @@
 from pseudocode_lang_1 import pseudo_lex
 import os
 import ply.yacc as yacc
-from data_prep_tools.constants import base_dir
+from data_prep_tools.constants import base_dir_2
 
 tokens = pseudo_lex.tokens
 lexer = pseudo_lex.lexer
@@ -9,7 +9,7 @@ lexer = pseudo_lex.lexer
 
 
 string_input = ""
-with open(base_dir+"1/pseudocode/329759.txt","r") as file:
+with open(base_dir_2 + "1/pseudocode/329759.txt", "r") as file:
     string_input = file.read()
 
 
@@ -243,7 +243,7 @@ if __name__ == "__main__":
 
 
     for i in range(1, 17):
-        dir = base_dir + str(i)
+        dir = base_dir_2 + str(i)
         trans_files = os.listdir(dir + "/transcripts")
         file_map[i] = trans_files
 
@@ -257,7 +257,7 @@ if __name__ == "__main__":
             lexer.lineno = 1
             current_file_name = to_go_files.pop(0)
             print(current_file_name)
-            filepath = base_dir + str(current_dir) + "/pseudocode/"+current_file_name
+            filepath = base_dir_2 + str(current_dir) + "/pseudocode/" + current_file_name
             with open(filepath,'r') as datafile:
                 string_input = datafile.read()
 

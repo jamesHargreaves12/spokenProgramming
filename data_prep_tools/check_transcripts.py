@@ -1,10 +1,10 @@
 import os
-from data_prep_tools.constants import base_dir
+from data_prep_tools.constants import base_dir_2
 
 transcript_count = 0
 response_id_to_count = {}
 for i in range(1,17):
-    dir = base_dir+str(i)
+    dir = base_dir_2 + str(i)
     audio_files = os.listdir(dir+"/pseudocode")
     transcript_files = os.listdir(dir+"/transcripts")
     stripped_audio = [audio_file.strip(".txt") for audio_file in audio_files]

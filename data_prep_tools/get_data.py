@@ -1,9 +1,10 @@
 import os
-from data_prep_tools.constants import base_dir
+from data_prep_tools.constants import base_dir_2
 
 def get_data_from_directory(dir_name, base_dir_path=None):
     if not base_dir_path:
-        base_dir_path = base_dir
+        print("Default path set")
+        base_dir_path = base_dir_2
     data = []
     for i in range(1, 17):
         dir = base_dir_path + str(i) + dir_name
@@ -13,9 +14,11 @@ def get_data_from_directory(dir_name, base_dir_path=None):
                 data.append(in_file.read())
     return data
 
+
 def get_file_map(dir_name,base=None):
     if not base:
-        base = base_dir
+        print("Default path set")
+        base = base_dir_2
     file_map = {}
     for i in range(1, 17):
         dir = base + str(i)

@@ -224,7 +224,7 @@ def transform_and_append(x,output_list):
 
 # test = re.compile(r"\(\|([a-z0-9]+?)\|( _| \|[a-z]+\|){0,1} \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
 
-test = re.compile(r"\(\|([\'a-z0-9_]+?)\|(?: _| \|[a-z]+\|){0,1}(?: \|(?:[\'a-z+0-9_]+):(?:[0-9]+)_(?:[A-Z&0-9]+)\|){0,1} \|([\'a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([\'a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
+test = re.compile(r"\(\|([\'a-z+0-9_]+?)\|(?: _| \|[a-z]+\|){0,1}(?: \|(?:[\'A-Za-z+0-9_]+):(?:[0-9]+)_(?:[A-Z&0-9$]+)\|){0,1} \|([\'A-Za-z+0-9_]+?):([0-9]+?)_([A-Z&0-9$]+?)\| \|([\'A-Za-z+0-9_]+?):([0-9]+?)_([A-Z0-9&$]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
 
 # test = re.compile(r"\(\|([a-z]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\|\)\n")
 
@@ -247,32 +247,31 @@ str8 = r'''(|obj2| |add:4_VV0| |variable_1:11_&FO|)
 '''
 str9 = r'''(|ccomp| |that:35_CST| |store:34_NN1| |end:38_VV0|)
 '''
-str10 =r'''(|arg_mod| _ |be+s:11_VBZ| |where:9_RRQ|)
+str10 = r'''(|ncsubj| |return:11_VV0| |I:10_PPIS1| _)
+'''
+str11 =r'''(|arg_mod| _ |be+s:11_VBZ| |where:9_RRQ|)
+'''
+str12 =r'''(|det| |value:36_NN1| |our:34_APP$|)
 '''
 
-strings = [str1,str2,str3,str4,str5,str6,str7,str8,str9,str10]
+strings = [str1,str2,str3,str4,str5,str6,str7,str8,str9,str10,str11,str12]
 for str in strings:
     print(test.match(str))
 
-print()
-print()
 
-print(test.match(str1)[1] == 'ncsubj')
-print(test.match(str1)[2] == 'equal+s')
-print(test.match(str1)[3] == '1')
-print(test.match(str1)[4] == 'VVZ')
-print(test.match(str1)[5] == 'variable_1')
-print(test.match(str1)[6] == '0')
-print(test.match(str1)[7] == 'NP1')
-
-str = "\\n"
-tokens_re = re.compile(r'\\n')
-print(tokens_re.match(str))
+# print()
+# print()
+#
+# print(test.match(str1)[1] == 'ncsubj')
+# print(test.match(str1)[2] == 'equal+s')
+# print(test.match(str1)[3] == '1')
+# print(test.match(str1)[4] == 'VVZ')
+# print(test.match(str1)[5] == 'variable_1')
+# print(test.match(str1)[6] == '0')
+# print(test.match(str1)[7] == 'NP1')
+#
+# str = "\\n"
+# tokens_re = re.compile(r'\\n')
+# print(tokens_re.match(str))
 # for i in range(0,13):
 #     print(test.match(str1)[i])
-
-
-
-a = [1,2,3]
-a.reverse()
-print(a)

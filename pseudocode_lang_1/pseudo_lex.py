@@ -1,6 +1,6 @@
 import ply.lex as lex
 import os
-from data_prep_tools.constants import base_dir
+from data_prep_tools.constants import base_dir_2
 
 tokens = [
     'ADD_ASSIGN',
@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
 
     for i in range(1, 17):
-        dir = base_dir + str(i)
+        dir = base_dir_2 + str(i)
         trans_files = os.listdir(dir + "/transcripts")
         file_map[i] = trans_files
 
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     while len(to_go_files) > 0:
         current_file_name = to_go_files.pop(0)
         print(current_file_name)
-        filepath = base_dir + str(current_dir) + "/pseudocode/"+current_file_name
+        filepath = base_dir_2 + str(current_dir) + "/pseudocode/" + current_file_name
         with open(filepath,'r') as datafile:
             string_input = datafile.read()
 

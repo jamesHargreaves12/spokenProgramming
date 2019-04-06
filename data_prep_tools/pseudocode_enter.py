@@ -1,7 +1,7 @@
 from tkinter import Tk,Text,Message, Button
 import os
 from pseudocode_lang_1 import pseudo_yacc
-from data_prep_tools.constants import base_dir
+from data_prep_tools.constants import base_dir_2
 
 file_map = {}
 

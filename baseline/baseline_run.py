@@ -80,7 +80,7 @@ def transcript_to_code_tokens(transcript_tokens, token_map, stem_flag):
             if NOT_A_TOKEN_IN_USE:
                 return [x for x in result if x != "NOT_A_TOKEN"]
             else:
-                result
+                return result
 
 
 def baseline(stem_flag):

@@ -111,22 +111,22 @@ def get_log_probability_of_data_given_alpha(alignments,sentence_pairs,alpha):
     return log_prob_data
 
 
+if __name__ == "__main__":
+    epoch = 100
+    null_flag = True
+    alignments1 = smt_functions.get_alignment_1(train_test_data,epoch,null_flag)
+    print(get_alpha(alignments1))
+    # gets alpha as 0.7788829380260138 (for english -> pseudocode)
+    alignments2 = smt_functions.get_alignment_2(train_test_data,epoch,null_flag)
+    print(get_alpha(alignments2))
+    # gets alpha as 0.7042902967121091 (for english -> pseudocode)
+    # gets alpha as 0.67335562987 (for pseudocode -> english)
+    # TODO this uses the approximation that d is distributed to infinity - compute it without this approximation.
 
-epoch = 100
-null_flag = True
-alignments1 = smt_functions.get_alignment_1(train_test_data,epoch,null_flag)
-print(get_alpha(alignments1))
-# gets alpha as 0.8027082941508369 (for english -> pseudocode)
-alignments2 = smt_functions.get_alignment_2(train_test_data,epoch,null_flag)
-print(get_alpha(alignments2))
-# gets alpha as 0.77358249072 (for english -> pseudocode)
-# gets alpha as 0.67335562987 (for pseudocode -> english)
-# TODO this uses the approximation that d is distributed to infinity - compute it without this approximation.
+    # constraints = ({'type':'ineq', 'fun':lambda x: x[0]})
+    # for alpha_100 in range(1,100):
+    #     alpha = alpha_100 / 100
+    #     prob_data = get_log_probability_of_data_given_alpha(alignments2,train_test_data,alpha)
+    #     print(alpha,prob_data)
 
-constraints = ({'type':'ineq', 'fun':lambda x: x[0]})
-for alpha_100 in range(1,100):
-    alpha = alpha_100 / 100
-    prob_data = get_log_probability_of_data_given_alpha(alignments2,train_test_data,alpha)
-    print(alpha,prob_data)
-
-# TODO this hasnt worked come back to it if time
+    # TODO this hasnt worked come back to it if time

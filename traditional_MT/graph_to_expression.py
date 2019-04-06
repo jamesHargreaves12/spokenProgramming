@@ -396,18 +396,18 @@ def get_output_string(tokens,dependencies):
             total += exp_str + " "
     return total
 
+if __name__ == "__main__":
+    toks,deps = load_dep_parse.get_token_deps()
+    # for i in range (40,49):
+    #     print("***************",i)
+    #     print(get_output_string(toks[i],deps[i]))
 
-toks,deps = load_dep_parse.get_token_deps()
-# for i in range (40,49):
-#     print("***************",i)
-#     print(get_output_string(toks[i],deps[i]))
+    # with open(get_path("/results/traditional_train.txt"),"w+") as file:
+    #     for tok,dep in zip(toks[:49],deps[:49]):
+    #         file.write(get_output_string(tok,dep))
+    #         file.write('\n')
 
-with open(get_path("/results/traditional_train.txt"),"w+") as file:
-    for tok,dep in zip(toks[:49],deps[:49]):
-        file.write(get_output_string(tok,dep))
-        file.write('\n')
-
-with open(get_path("/results/traditional_test1.txt"),"w+") as file:
-    for tok,dep in zip(toks[49:],deps[49:]):
-        file.write(get_output_string(tok,dep))
-        file.write('\n')
+    with open(get_path("/results/traditional_test2.txt"),"w+") as file:
+        for tok,dep in zip(toks,deps):
+            file.write(get_output_string(tok,dep))
+            file.write('\n')

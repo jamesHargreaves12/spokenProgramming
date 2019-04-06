@@ -1,14 +1,14 @@
 import re
 from collections import namedtuple,defaultdict
 from data_prep_tools.graph_funs import DependencyGraph
-from data_prep_tools.constants import base_dir
+from data_prep_tools.constants import base_dir_2
 
 Dependency = namedtuple('Dependency', 'type, head_val, head_position, head_type, dependent_val, dependent_position, dependent_type')
-tokens_re = re.compile(r"\|([\'a-z+0-9_]+?):([0-9]+?)_(([A-Z&0-9]+?)|\$)\|")
+tokens_re = re.compile(r"\|([\'A-Za-z+0-9_]+?):([0-9]+?)_(([A-Z&0-9$]+?)|\$)\|")
 # OLD dependency_re = re.compile(r"\(\|([a-z0-9]+?)\|( _| \|[a-z]+\|){0,1} \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
-dependency_re = re.compile(r"\(\|([\'a-z+0-9_]+?)\|(?: _| \|[a-z]+\|){0,1}(?: \|(?:[\'a-z+0-9_]+):(?:[0-9]+)_(?:[A-Z&0-9]+)\|){0,1} \|([\'a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\| \|([\'a-z+0-9_]+?):([0-9]+?)_([A-Z0-9&]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
+dependency_re = re.compile(r"\(\|([\'a-z+0-9_]+?)\|(?: _| \|[a-z]+\|){0,1}(?: \|(?:[\'A-Za-z+0-9_]+):(?:[0-9]+)_(?:[A-Z&0-9$]+)\|){0,1} \|([\'A-Za-z+0-9_]+?):([0-9]+?)_([A-Z&0-9$]+?)\| \|([\'A-Za-z+0-9_]+?):([0-9]+?)_([A-Z0-9&$]+?)\|( _| \|[a-z]+\|){0,1}\)\n")
 
-dependency_extra_info_re = re.compile(r"\(\|([a-z]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9]+?)\|\)\n")
+dependency_extra_info_re = re.compile(r"\(\|([a-z+0-9_]+?)\| \|([a-z+0-9_]+?):([0-9]+?)_([A-Z&0-9$]+?)\|\)\n")
 aritmetic_strings = ["subtract","plus","minus", "over", "time+s","multiply", "multiply+ed", "devide","divide+ed","add","percent"]
 
 # list of head token, tail token to types of relationship you want to combine
@@ -84,7 +84,7 @@ combine_by_position_mapping = [
 
 
 def get_token_deps():
-    with open(base_dir + "transcripts_replaced.parses", "r") as file:
+    with open(base_dir_2 + "transcripts_replaced2.parses", "r") as file:
         line = file.readline()
         token_lists = []
         dep_strs = []

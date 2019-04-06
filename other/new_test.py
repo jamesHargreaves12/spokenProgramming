@@ -57,53 +57,58 @@ from smt.ibm_models import get_best_pairing
 # test_models.print_alignment(pairing1,test_pair)
 # test_models.print_alignment(pairing2,(test_pair[1],test_pair[0]))
 
-print([1,2,3,4,5][3:4])
+# print([1,2,3,4,5][3:4])
+#
+# alignment = [(0,0),(0,1),(1,2),(2,3),(3,3),(4,5),(5,4)]
+#
+#
+# def get_smallest_phrase_set(alignment):
+#     max_x = max([x for x,_ in alignment])
+#     start_x = 0
+#     phrases = []
+#     while start_x <= max_x:
+#         new_points = True
+#         end_x = start_x
+#         cur_set = []
+#         while new_points:
+#             cur_set = [(x,y) for x,y in alignment if start_x <= x <= end_x]
+#             len_cur_set = len(cur_set)
+#             ys = [y for _,y in cur_set]
+#             min_y,max_y = min(ys),max(ys)
+#             cur_set = [(x,y) for x,y in alignment if min_y <= y <= max_y]
+#             new_points = not(len(cur_set) == len_cur_set)
+#             end_x = max([x for x,_ in cur_set])
+#         phrases.append((start_x,end_x,min_y,max_y))
+#         start_x = end_x+1
+#     return phrases
+#
+# def get_distances(phrases):
+#     distances = []
+#     sorted_ps = sorted(phrases,key=lambda x:x[2])
+#     prev = (-1,-1,-1,-1)
+#     for cur in sorted_ps:
+#         dist = abs(cur[0] - prev[1] - 1)
+#         distances.append(dist)
+#         prev = cur
+#     return distances
+#
+# alpha = 0.1
+# def probability_distance(d,n,i):
+#     num = math.pow(alpha,d)
+#     den = 0
+#     for j in range(n):
+#         power = abs(i-j)
+#         den += math.pow(alpha,power)
+#     return num/den
+#
+# ps = (get_smallest_phrase_set(alignment))
+# ds = get_distances(ps)
+# print(ps)
+# print(ds)
+# for i,d in enumerate(ds):
+#     print(probability_distance(d,5,i))
 
-alignment = [(0,0),(0,1),(1,2),(2,3),(3,3),(4,5),(5,4)]
-
-
-def get_smallest_phrase_set(alignment):
-    max_x = max([x for x,_ in alignment])
-    start_x = 0
-    phrases = []
-    while start_x <= max_x:
-        new_points = True
-        end_x = start_x
-        cur_set = []
-        while new_points:
-            cur_set = [(x,y) for x,y in alignment if start_x <= x <= end_x]
-            len_cur_set = len(cur_set)
-            ys = [y for _,y in cur_set]
-            min_y,max_y = min(ys),max(ys)
-            cur_set = [(x,y) for x,y in alignment if min_y <= y <= max_y]
-            new_points = not(len(cur_set) == len_cur_set)
-            end_x = max([x for x,_ in cur_set])
-        phrases.append((start_x,end_x,min_y,max_y))
-        start_x = end_x+1
-    return phrases
-
-def get_distances(phrases):
-    distances = []
-    sorted_ps = sorted(phrases,key=lambda x:x[2])
-    prev = (-1,-1,-1,-1)
-    for cur in sorted_ps:
-        dist = abs(cur[0] - prev[1] - 1)
-        distances.append(dist)
-        prev = cur
-    return distances
-
-alpha = 0.1
-def probability_distance(d,n,i):
-    num = math.pow(alpha,d)
-    den = 0
-    for j in range(n):
-        power = abs(i-j)
-        den += math.pow(alpha,power)
-    return num/den
-
-ps = (get_smallest_phrase_set(alignment))
-ds = get_distances(ps)
-print(ps)
-print(ds)
-for i,d in enumerate(ds):
-    print(probability_distance(d,5,i))
+a = [1,2,3,4,5]
+print(a[:1]+a[2:])
+print(a[:0]+a[1:])
+print(a[:4]+a[5:])

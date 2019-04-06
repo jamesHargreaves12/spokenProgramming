@@ -25,7 +25,10 @@ def simplified_output(tree, variable_list):
     elif label == "FOR IN":
         expr = simplified_output(tree[2],variable_list)
         block = simplified_output(tree[3],variable_list)
-        return "for VARIABLE in " + expr + " " + block
+        variable_num = variable_list.index(tree[1])
+        variable_str = "VARIABLE_" + str(variable_num)
+
+        return "for " + variable_str + " in " + expr + " " + block
 
     elif label == "FOR":
         exp1 = simplified_output(tree[1],variable_list) + " "
