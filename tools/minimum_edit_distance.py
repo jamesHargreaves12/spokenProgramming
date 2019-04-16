@@ -28,7 +28,8 @@ def minimum_edit_distance(source,target,penalty_functions=levenshtein_distance):
     target.pop(0)
     return F[n-1][m-1]
 
-
+def minimum_edit_distance_per_token(source,target):
+    return minimum_edit_distance(source,target)/len(target)
 if __name__ == "__main__":
     modified_levenshtein_distance = (lambda x:1,lambda y:1,lambda x,y: 0 if x == y else 1)
     print(minimum_edit_distance([x for x in "execution"],[y for y in "intention"],modified_levenshtein_distance))

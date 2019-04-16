@@ -13,8 +13,8 @@ def get_ted_for_fold_v1():
         alignments = smt_functions.get_alignment_1(train, epoch, null_flag)
         log_phrase_table = smt_functions.get_log_phrase_table1(train, alignments)
         lang_model = smt_functions.get_language_model(train, n)
-        alpha = 0.8027082941508369
-        omega = 1.0
+        alpha = 0.7788829380260138
+        omega = 0.9
         ted = total_edit_distance_smt(test, alpha, omega, lang_model, log_phrase_table)
         print(ted)
         write_to_log("Edit distance = {}\n".format(ted))
@@ -23,7 +23,7 @@ def get_ted_for_fold_v1():
 
 
 if __name__ == "__main__":
-    # results = get_ted_for_fold_v1()
-    results = [239,402,510,507,867,290,290,466,939]
-    print(sum(results))
-    # 4510
+    results = get_ted_for_fold_v1()
+    # old_results = [239,402,510,507,867,290,290,466,939]
+    # print(sum(results))
+

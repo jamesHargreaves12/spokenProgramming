@@ -33,6 +33,8 @@ def default_d(i,j,l,m):
     # m = len f
     # i -> e
     # j -> f
+    if m==1:
+        return 1
     sigma = D_SIGMA(l/2)
     mu = j * (l-1) / (m-1)
     start = ((i - 0.5) - mu) / sigma

@@ -6,9 +6,8 @@ from smt.test_models import print_alignment
 from tools.find_resource_in_project import get_path
 
 
-def get_initial_t(sentence_pairs, m1_loop_count, null_flag=True):
-    # probably would like to get this from a file for speed
-    return ibmmodel1.train(sentence_pairs, m1_loop_count, null_flag=null_flag)
+def get_initial_t(sentence_pairs, m1_loop_count, null_flag=True, force_mapping=False):
+    return ibmmodel1.train(sentence_pairs, m1_loop_count, null_flag=null_flag,force_mapping=force_mapping)
 
 
 def get_next_estimate(t_e_given_f:dict, d_e_given_f:dict, sentence_pairs, null_flag):
@@ -72,13 +71,13 @@ def get_next_estimate(t_e_given_f:dict, d_e_given_f:dict, sentence_pairs, null_f
     return t_e_given_f, d_e_given_f
 
 
-def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filename=None):
+def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filename=None,force_mapping=False):
     print("Train IBM_M1")
     d_e_given_f = {}
     if t_filename:
         t_e_given_f = ibmmodel1.open_t(t_filename)
     else:
-        t_e_given_f = get_initial_t(sentence_pairs, m1_loop_count, null_flag)
+        t_e_given_f = get_initial_t(sentence_pairs, m1_loop_count, null_flag,force_mapping=force_mapping)
         # ibmmodel1.save_t(t,"t_2.txt")
 
     print("Train IBM_M2")
@@ -162,8 +161,8 @@ def print_specific_d(d,l,m):
         print(j,d[(j,l,m)])
 
 
-def get_alignments_2(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True):
-    t_e_given_f, d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag)
+def get_alignments_2(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,force_mapping=False):
+    t_e_given_f, d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag,force_mapping=force_mapping)
 
     rev_pairs = [(y,x) for x,y in sentence_pairs]
     t_f_given_e, d_f_given_e = train(rev_pairs     ,m1_loop_count,m2_loop_count,null_flag)

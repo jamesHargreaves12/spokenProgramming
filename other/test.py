@@ -275,3 +275,6 @@ for str in strings:
 # print(tokens_re.match(str))
 # for i in range(0,13):
 #     print(test.match(str1)[i])
+
+
+indices = [i for i in range(133)]

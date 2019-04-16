@@ -5,7 +5,7 @@ from test1 import total_edit_distance_smt
 
 
 def get_ted_for_fold_v1():
-    print("GET TED v2 test")
+    print("GET TED v1 test")
     results = []
     for test,train in train_test_split:
         split_test = split_data(test)
@@ -52,4 +52,4 @@ def get_ted_for_fold_v2():
 # So v2 - omega = 1.5
 
 if __name__ == "__main__":
-    results = get_ted_for_fold_v1()
+    results = get_ted_for_fold_v2()

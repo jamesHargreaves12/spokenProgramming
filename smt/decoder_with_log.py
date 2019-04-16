@@ -193,7 +193,7 @@ def remove_section_from_bounds(bounds,section):
     return bounds
 
 
-def beam_search_stack_decoder(source,lang_model,log_phrase_table):
+def beam_search_stack_decoder(source,lang_model,log_phrase_table,first_trans_tok=""):
     # using pseudocode on page 908 of J&M 2 edition
     # trans_info_so_far = phrase_boundaries, most recently translated end word, target translation so far
     # if cur_end_word = -1 then it is non existant (ie 0 word translated so far)
@@ -203,7 +203,7 @@ def beam_search_stack_decoder(source,lang_model,log_phrase_table):
     len_source = len(source)
     initial_bounds = [(0,len_source-1)]
     estimate_cost = log_future_cost(initial_bounds, source, phrase_to_max_log_prob)
-    initial_value = (estimate_cost,(initial_bounds,-1,""),0)
+    initial_value = (estimate_cost,(initial_bounds,-1,first_trans_tok),0)
     hypothesis_stacks = [[] for _ in range(1+len_source)]
     thresh = [-inf for _ in range(1+len_source)]
     heappush(hypothesis_stacks[0],initial_value)

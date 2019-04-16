@@ -1,6 +1,17 @@
 from termcolor import colored
 
 import generate_folds
+split_keywords = ["while", "for", "if", "else", "return"]
+
+
+def remove_start_tokens(split_train_test):
+    for i in range(len(split_train_test)):
+        transc,pseud = split_train_test[i]
+        start_transc = transc[0]
+        start_pseud = pseud[0]
+        if start_pseud == start_transc and start_transc in split_keywords:
+            split_train_test[i] = (transc[1:],pseud[1:])
+
 
 def find_next_location(word, tokens,start_pos):
     for i in range(start_pos, len(tokens)):
@@ -11,14 +22,13 @@ def find_next_location(word, tokens,start_pos):
 
 def split_data(data):
     splits = []
-    keywords = ["while", "for", "if", "else", "return"]
     end_words = ["end"]
     for ts,ps in data:
         ps_split_start = 0
         ts_split_start = 0
         end_discount = 0
         for i in range(2,len(ts)):
-            if ts[i] in keywords:
+            if ts[i] in split_keywords:
                 if end_discount > 0:
                     end_discount = 0
                     continue
@@ -37,6 +47,8 @@ def split_data(data):
 
     return splits
 
+
+
 def flatten(lss):
     return [item for sublist in lss for item in sublist]
 
@@ -46,7 +58,7 @@ def get_train_test_split(train_test_folds,i):
     return test,flatten(train_folds)
 
 
-sentence_pair_folds = generate_folds.get_folds(10, "SEQ")
+sentence_pair_folds = generate_folds.get_folds(10, "SEQ",True)
 validation_set = sentence_pair_folds[-1]
 train_test_folds = sentence_pair_folds[:-1]
 train_test_data = flatten(train_test_folds)

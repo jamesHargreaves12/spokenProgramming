@@ -1,2 +1,0 @@
-omega 0.5
-predict: while index VARIABLE_2 and VARIABLE_3 VARIABLE_1 FUNCTION_CALL_4

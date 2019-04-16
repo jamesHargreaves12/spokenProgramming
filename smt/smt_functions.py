@@ -45,6 +45,6 @@ def get_log_phrase_table2(sentance_pairs,alignments):
 
 
 # Constants(in file decoder) = alpha,omega
-def run_smt(lang_model,log_phrase_table,source):
-    return decoder_with_log.beam_search_stack_decoder(source, lang_model, log_phrase_table)
+def run_smt(lang_model,log_phrase_table,source,initial_trans=""):
+    return decoder_with_log.beam_search_stack_decoder(source, lang_model, log_phrase_table,first_trans_tok=initial_trans)
 
