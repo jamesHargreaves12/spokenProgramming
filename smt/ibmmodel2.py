@@ -6,11 +6,11 @@ from smt.test_models import print_alignment
 from tools.find_resource_in_project import get_path
 
 
-def get_initial_t(sentence_pairs, m1_loop_count, null_flag=True, force_mapping=False):
-    return ibmmodel1.train(sentence_pairs, m1_loop_count, null_flag=null_flag,force_mapping=force_mapping)
+def get_initial_t(sentence_pairs, m1_loop_count, null_flag=True, fm_flag=False):
+    return ibmmodel1.train(sentence_pairs, m1_loop_count, null_flag=null_flag,fm_flag=fm_flag)
 
 
-def get_next_estimate(t_e_given_f:dict, d_e_given_f:dict, sentence_pairs, null_flag):
+def get_next_estimate(t_e_given_f:dict, d_e_given_f:dict, sentence_pairs, null_flag, fm_flag=False):
     # http://www.ai.mit.edu/courses/6.891-nlp/l11.pdf
     # get the alignment probabilities
     a_ijk = {}
@@ -67,18 +67,20 @@ def get_next_estimate(t_e_given_f:dict, d_e_given_f:dict, sentence_pairs, null_f
             for i in range(l):
                 # if k == 3:
                 #     print(a_count[(i,j,l,m)],tot_a_count[(j,l,m)],l,m)
-                d_e_given_f[(j - 1, l, m - 1)][i] = a_count[(i, j, l, m)] / tot_a_count[(j, l, m)]
+                if a_count[(i,j,l,m)] == 0:
+                    d_e_given_f[(j-1, l, m-1)][i] = 0
+                else:
+                    d_e_given_f[(j - 1, l, m - 1)][i] = a_count[(i, j, l, m)] / tot_a_count[(j, l, m)]
     return t_e_given_f, d_e_given_f
 
 
-def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filename=None,force_mapping=False):
+def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filename=None,fm_flag=False):
     print("Train IBM_M1")
     d_e_given_f = {}
     if t_filename:
         t_e_given_f = ibmmodel1.open_t(t_filename)
     else:
-        t_e_given_f = get_initial_t(sentence_pairs, m1_loop_count, null_flag,force_mapping=force_mapping)
-        # ibmmodel1.save_t(t,"t_2.txt")
+        t_e_given_f = get_initial_t(sentence_pairs, m1_loop_count, null_flag, fm_flag=fm_flag)
 
     print("Train IBM_M2")
     if null_flag:
@@ -86,7 +88,7 @@ def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filenam
     for i in range(m2_loop_count):
         if i % 20 == 19:
             print("Loop:",i+1)
-        t_e_given_f, d_e_given_f = get_next_estimate(t_e_given_f, d_e_given_f, sentence_pairs, null_flag)
+        t_e_given_f, d_e_given_f = get_next_estimate(t_e_given_f, d_e_given_f, sentence_pairs, null_flag, fm_flag=fm_flag)
     return t_e_given_f,d_e_given_f
 
 
@@ -160,12 +162,15 @@ def print_specific_d(d,l,m):
     for j in range(m):
         print(j,d[(j,l,m)])
 
-
-def get_alignments_2(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,force_mapping=False):
-    t_e_given_f, d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag,force_mapping=force_mapping)
+def get_alignment_models_2(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,fm_flag=False):
+    t_e_given_f, d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag,fm_flag=fm_flag)
 
     rev_pairs = [(y,x) for x,y in sentence_pairs]
-    t_f_given_e, d_f_given_e = train(rev_pairs     ,m1_loop_count,m2_loop_count,null_flag)
+    t_f_given_e, d_f_given_e = train(rev_pairs     ,m1_loop_count,m2_loop_count,null_flag,fm_flag=fm_flag)
+    return t_e_given_f,d_e_given_f,t_f_given_e,d_f_given_e
+
+def get_alignments_2(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,fm_flag=False):
+    t_e_given_f, d_e_given_f, t_f_given_e, d_f_given_e = get_alignment_models_2(sentence_pairs,m1_loop_count,m2_loop_count,null_flag,fm_flag)
     return [get_phrase_alignment_2(t_e_given_f, d_e_given_f, t_f_given_e, d_f_given_e, fs, es, null_flag) for fs,es in sentence_pairs]
 
 

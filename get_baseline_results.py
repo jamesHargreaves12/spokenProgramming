@@ -1,3 +1,4 @@
+from bag_of_words_test import bag_of_words_test
 from baseline import baseline_functions
 from get_data import train_test_split
 from smt import smt_functions
@@ -6,9 +7,12 @@ from tools.minimum_edit_distance import minimum_edit_distance_per_token
 
 def total_edit_distance_baseline(test_pairs, threshold, stem_flag, lang_model,pseudocode_tokens):
     total_dist = 0
+    tot_bow_test = 0
     for trans,pseudo in test_pairs:
         prediction = baseline_functions.get_output_baseline(trans,lang_model,pseudocode_tokens,stem_flag,threshold)
         total_dist += minimum_edit_distance_per_token(prediction,pseudo)
+        tot_bow_test += bag_of_words_test(prediction,pseudo)
+    # print(tot_bow_test)
     return total_dist/len(test_pairs)
 
 

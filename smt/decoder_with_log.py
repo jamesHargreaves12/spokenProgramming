@@ -1,3 +1,4 @@
+from collections import defaultdict
 from heapq import heappop,heappush,heappushpop
 
 from smt import ibmmodel1
@@ -149,11 +150,12 @@ def get_new_hyps(current_bounds,log_phrase_table,source,len_source):
     return new_hyps
 
 
-def get_phrase_to_max_prob(phrase_table):
+def get_phrase_to_max_prob(phrase_table,lang_model:LanguageModel):
     phrase_to_max_prob = {}
     for phrase in phrase_table:
-        max_translation = max(phrase_table[phrase], key=lambda key: phrase_table[phrase][key])
-        phrase_to_max_prob[phrase] = phrase_table[phrase][max_translation]
+        max_translation = max(phrase_table[phrase], key=lambda key: phrase_table[phrase][key]+ (1 if len(key) < 2 else lang_model.get_log_prob(key[0],key[1:])))
+        phrase_to_max_prob[phrase] = phrase_table[phrase][max_translation] \
+                                     + (0 if len(max_translation) < 2 else lang_model.get_log_prob(max_translation[0],max_translation[1:]))
     return phrase_to_max_prob
 
 
@@ -199,7 +201,7 @@ def beam_search_stack_decoder(source,lang_model,log_phrase_table,first_trans_tok
     # if cur_end_word = -1 then it is non existant (ie 0 word translated so far)
     # (items of form (cost,trans_info_so_far,cur_cost)
     wipe_future_estimate_cache()
-    phrase_to_max_log_prob = get_phrase_to_max_prob(log_phrase_table)
+    phrase_to_max_log_prob = get_phrase_to_max_prob(log_phrase_table,lang_model)
     len_source = len(source)
     initial_bounds = [(0,len_source-1)]
     estimate_cost = log_future_cost(initial_bounds, source, phrase_to_max_log_prob)
@@ -259,7 +261,7 @@ def beam_search_stack_decoder_with_back_track(source,lang_model,log_phrase_table
     # if cur_end_word = -1 then it is non existant (ie 0 word translated so far)
     # (items of form (cost,trans_info_so_far,cur_cost,back_track)
     wipe_future_estimate_cache()
-    phrase_to_max_log_prob = get_phrase_to_max_prob(log_phrase_table)
+    phrase_to_max_log_prob = get_phrase_to_max_prob(log_phrase_table,lang_model)
     len_source = len(source)
     initial_bounds = [(0,len_source-1)]
     estimate_cost = log_future_cost(initial_bounds, source, phrase_to_max_log_prob)

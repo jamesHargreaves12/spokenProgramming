@@ -40,11 +40,11 @@ def get_ngram_model(sentances, n, smoothing_type="LAPLACE", padded=False):
 
 
 class LanguageModel():
-    def __init__(self, sentences, n=2, padded=True):
+    def __init__(self, sentences, n=2, padded=True, variable_func_uniform=False):
         self.n = n
         self.padded = padded
         self.default,self.prefix_defaults,self.grams = get_ngram_model(sentences, n, padded=padded)
-
+        self.variable_func_uniform = variable_func_uniform
         self.log_default = log(self.default)
         self.log_prefix_defaults = {}
         self.log_grams = {}

@@ -12,13 +12,13 @@ def variable_transform(transcript_data, variable_data):
             replace_text = "FUNCTION_CALL_"
             continue
         elif variable == '*********' and replace_text == "FUNCTION_CALL_":
-            replace_text = "STR"
+            replace_text = "STRING_CONST"
             continue
         elif variable == '*********':
             print("ISSUE")
-        cur_replace_text = replace_text + str(index) if replace_text != "STR" else replace_text
+        cur_replace_text = replace_text + str(index) if replace_text != "STRING_CONST" else replace_text
         if variable == "\\n":
-            transcript_data = re.sub(r'\\n',"STR",transcript_data)
+            transcript_data = re.sub(r'\\n',"STRING_CONST",transcript_data)
         else:
             transcript_data = re.sub(r' '+variable+r'\s', " "+cur_replace_text+" ", transcript_data)
             transcript_data = re.sub(r' '+variable+r'$', " "+cur_replace_text, transcript_data)
@@ -26,7 +26,7 @@ def variable_transform(transcript_data, variable_data):
             transcript_data = re.sub(r' ' + variable + r'\s', " " + cur_replace_text + " ", transcript_data)
             transcript_data = re.sub(r' ' + variable + r'$', " " + cur_replace_text, transcript_data)
             transcript_data = re.sub(r'^' + variable + r' ', cur_replace_text + " ", transcript_data)
-    transcript_data = re.sub("empty string", "STR", transcript_data)
+    transcript_data = re.sub("empty string", "STRING_CONST", transcript_data)
     return transcript_data
 
 

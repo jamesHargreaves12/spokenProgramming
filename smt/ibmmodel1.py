@@ -1,21 +1,25 @@
 from itertools import product
 from collections import defaultdict
 from smt import ibm_models, test_models
+from smt.constants import forced_mappings
 from smt.ibm_models import get_best_pairing
 from smt.test_models import print_alignment
 from tools.find_resource_in_project import get_path
 
 
-def get_initial(sentance_pairs):
+def get_initial(sentance_pairs,fm_flag=False):
     f_lexicon = set()
     for f,_ in sentance_pairs:
         f_lexicon.update(f)
     uniform = 1/len(f_lexicon)
     t_initial = defaultdict(lambda:uniform)
+    if fm_flag:
+        for k in forced_mappings:
+            t_initial[(k,forced_mappings[k])] = 1
     return t_initial
 
 
-def get_next_t_estimate(sentence_pairs, t_e_given_f):
+def get_next_t_estimate(sentence_pairs, t_e_given_f,fm_flag=False):
     # using algoritm from http://mt-class.org/jhu/slides/lecture-ibm-model1.pdf
     # gives t(e|f)
     count = defaultdict(float)
@@ -32,18 +36,21 @@ def get_next_t_estimate(sentence_pairs, t_e_given_f):
             count[(e,f)] += t_e_given_f[(e, f)] / s_total[e]
             total[f] += t_e_given_f[(e, f)] / s_total[e]
     for f,e in product(lexicon_f,lexicon_e):
-        t_e_given_f[(e, f)] = count[(e, f)] / total[f]
+        if fm_flag and f in forced_mappings:
+            t_e_given_f[(e,f)] = 1 if forced_mappings[f] == e else 0
+        else:
+            t_e_given_f[(e, f)] = count[(e, f)] / total[f]
     return t_e_given_f
 
 
-def train(sentence_pairs, loop_count, null_flag=True):
+def train(sentence_pairs, loop_count, null_flag=True,fm_flag=False):
     if null_flag:
         sentence_pairs = [(["NULL"]+f,e) for f,e in sentence_pairs]
-    t_e_given_f = get_initial(sentence_pairs)
+    t_e_given_f = get_initial(sentence_pairs,fm_flag=fm_flag)
     for i in range(loop_count):
         if i % 20 == 19 and __name__ != "__main__":
             print("Loop: "+str(i+1))
-        t_e_given_f = get_next_t_estimate(sentence_pairs,t_e_given_f)
+        t_e_given_f = get_next_t_estimate(sentence_pairs,t_e_given_f,fm_flag=fm_flag)
     return t_e_given_f
 
 
@@ -72,24 +79,15 @@ def get_phrase_alignment(t_e_given_f, t_f_given_e, fs, es, null_flag=True):
         return phrase_alignment
 
 
-def get_alignments_1(sentence_pairs,epoch=100,null_flag=True):
-    t_e_given_f = train(sentence_pairs,epoch,null_flag)
+def get_alignment_models_1(sentence_pairs,epoch=100,null_flag=True,fm_flag=False):
+    t_e_given_f = train(sentence_pairs,epoch,null_flag,fm_flag=fm_flag)
     rev_pairs = [(y,x) for x,y in sentence_pairs]
-    t_f_given_e = train(rev_pairs,epoch,null_flag)
-    # for fs,es in sentence_pairs[0:4]:
-    #     f_given_e_pairing = ibm_models.get_best_pairing(t_f_given_e, fs, ["NULL"]+es)
-    #     f_given_e_pairing = [(f, e - 1) for f, e in f_given_e_pairing if e != 0]
-    #
-    #     e_given_f_pairing = ibm_models.get_best_pairing(t_e_given_f, es, ["NULL"]+fs)
-    #     e_given_f_pairing = [(e, f - 1) for e, f in e_given_f_pairing if f != 0]
-    #     e_given_f_rev = [(y, x) for x, y in e_given_f_pairing]
-    #
-    #     phrase_alignment = ibm_models.get_phrase_alignment_by_symmetry(f_given_e_pairing, e_given_f_rev)
-    #
-    #     print_alignment(f_given_e_pairing,(fs,es))
-    #     print_alignment(e_given_f_pairing,(es,fs))
-    #     print_alignment(phrase_alignment,(fs,es))
-    #
+    t_f_given_e = train(rev_pairs,epoch,null_flag,fm_flag=fm_flag)
+    return t_e_given_f,t_f_given_e
+
+
+def get_alignments_1(sentence_pairs,epoch=100,null_flag=True,fm_flag=False):
+    t_e_given_f,t_f_given_e = get_alignment_models_1(sentence_pairs,epoch,null_flag,fm_flag)
     return [get_phrase_alignment(t_e_given_f,t_f_given_e,fs,es,null_flag) for fs,es in sentence_pairs]
 
 

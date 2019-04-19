@@ -3,7 +3,7 @@ from baseline import baseline_functions
 from other.log_module import write_to_log
 from smt import smt_functions, decoder_with_log
 from tools.minimum_edit_distance import minimum_edit_distance
-from get_data import validation_set, train_test_data, split_keywords
+from get_data import validation_set, train_test_data, new_exp_keywords
 
 
 def total_edit_distance_smt(test_pairs, alpha, omega, lang_model, log_phrase_table):
@@ -29,7 +29,7 @@ def total_edit_distance_smt_enhanced(test_pairs, alpha, omega, lang_model, log_p
         gc.collect()
         trans_start = trans[0]
         pseudo_start = pseudo[0]
-        if trans_start in split_keywords:
+        if trans_start in new_exp_keywords:
             prediction = smt_functions.run_smt(lang_model,log_phrase_table,trans,initial_trans=trans_start)
             prediction = prediction
         else:

@@ -87,8 +87,8 @@ def simplified_output(tree, variable_list):
     elif label == "STATEMENT2":
         lhs = simplified_output(tree[2],variable_list)
         rhs = simplified_output(tree[3],variable_list)
-        op_toks = " ".join([x for x in tree[1]])
-        return lhs + " " + op_toks + " " + rhs
+        # op_toks = " ".join([x for x in tree[1]])
+        return lhs + " " + tree[1] + " " + rhs
 
     elif label == "EXPRESSION":
         left = simplified_output(tree[2],variable_list)
@@ -107,11 +107,11 @@ def simplified_output(tree, variable_list):
 
     elif label == "UNARY":
         if tree[1] in ["++","--","-"]:
-            tokenized_op = " ".join([x for x in tree[1]])
-            return tokenized_op + " " + simplified_output(tree[2],variable_list)
+            # tokenized_op = " ".join([x for x in tree[1]])
+            return tree[1] + " " + simplified_output(tree[2],variable_list)
         else:
-            tokenized_op = " ".join([x for x in tree[2]])
-            return simplified_output(tree[1],variable_list) + " " + tokenized_op
+            # tokenized_op = " ".join([x for x in tree[2]])
+            return simplified_output(tree[1],variable_list) + " " + tree[2]
 
     elif label == "SUBLIST":
         exp1 = simplified_output(tree[1],variable_list)
@@ -121,7 +121,8 @@ def simplified_output(tree, variable_list):
 
     elif label == "BRAKET_VAL":
         exp1 = simplified_output(tree[1],variable_list)
-        return "( " + exp1 + " )"
+        # return "( " + exp1 + " )"
+        return exp1
 
     elif label == "VAL":
         data = tree[1]

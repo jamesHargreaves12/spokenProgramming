@@ -1,5 +1,6 @@
 from enum import Enum
 
+from data_prep_tools.constants import base_dir_2
 from data_prep_tools.graph_funs import DependencyGraph
 from tools.find_resource_in_project import get_path
 from traditional_MT import load_dep_parse
@@ -397,7 +398,7 @@ def get_output_string(tokens,dependencies):
     return total
 
 if __name__ == "__main__":
-    toks,deps = load_dep_parse.get_token_deps()
+    toks,deps = load_dep_parse.get_token_deps(base_dir=base_dir_2)
     # for i in range (40,49):
     #     print("***************",i)
     #     print(get_output_string(toks[i],deps[i]))

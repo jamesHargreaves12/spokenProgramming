@@ -13,8 +13,8 @@ def get_language_model(train_data,n):
 
 # Constants = epoch,null_flag
 # from ibmmodels (applies also to model2) = PREVENT_VARIABLE_TO_NULL_MAP
-def get_alignment_1(sentence_pairs: list, epoch: int, null_flag: bool):
-    return get_alignments_1(sentence_pairs, epoch, null_flag)
+def get_alignment_1(sentence_pairs: list, epoch: int, null_flag: bool,fm_flag=False):
+    return get_alignments_1(sentence_pairs, epoch, null_flag,fm_flag=fm_flag)
 
 def get_p_table_1(sentence_pairs, alignments):
     return ibmmodel1.get_phrase_table_m1(alignments, sentence_pairs)
@@ -29,8 +29,8 @@ def get_log_phrase_table1(sentance_pairs,alignments):
 # Constants in File = D_SIGMA
 # prune Constants = e_max_length, f_max_length
 # sentance_pairs are zipped
-def get_alignment_2(sentence_pairs: list, epoch: int, null_flag: bool):
-    align = ibmmodel2.get_alignments_2(sentence_pairs, epoch, epoch, null_flag)
+def get_alignment_2(sentence_pairs: list, epoch: int, null_flag: bool,fm_flag=False):
+    align = ibmmodel2.get_alignments_2(sentence_pairs, epoch, epoch, null_flag,fm_flag=fm_flag)
     return align
 
 def get_p_table2(sentance_pairs,alignment):

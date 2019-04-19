@@ -83,8 +83,9 @@ combine_by_position_mapping = [
 ]
 
 
-def get_token_deps():
-    with open(base_dir_2 + "transcripts_replaced2.parses", "r") as file:
+def get_token_deps(base_dir):
+    file_name = "transcripts_replaced2.parses" if base_dir == base_dir_2 else "transcripts_replaced.parses"
+    with open(base_dir + file_name, "r") as file:
         line = file.readline()
         token_lists = []
         dep_strs = []
@@ -327,7 +328,7 @@ def combine_by_postion(graph:DependencyGraph):
 
 if __name__ == "__main__":
 
-    token_lists, deps = get_token_deps()
+    token_lists, deps = get_token_deps(base_dir_2)
     only_look_at = -1
 
     for i in range(6,7):

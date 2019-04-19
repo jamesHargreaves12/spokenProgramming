@@ -10,6 +10,8 @@ def get_data_from_directory(dir_name, base_dir_path=None):
         dir = base_dir_path + str(i) + dir_name
         input_files = os.listdir(dir)
         for filename in input_files:
+            # if dir_name == "/transcripts_var_replaced/":
+            #     print(len(data),i,filename)
             with open(dir + filename, "r") as in_file:
                 data.append(in_file.read())
     return data
