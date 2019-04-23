@@ -1,13 +1,13 @@
 from itertools import product
 from collections import defaultdict
 from smt import ibm_models, test_models
-from smt.constants import forced_mappings
+from smt.constants import forced_mappings, forced_mappings_trans_to_pseud
 from smt.ibm_models import get_best_pairing
 from smt.test_models import print_alignment
 from tools.find_resource_in_project import get_path
 
 
-def get_initial(sentance_pairs,fm_flag=False):
+def get_initial(sentance_pairs,fm_flag=False,trans_to_pseud_flag=False):
     f_lexicon = set()
     for f,_ in sentance_pairs:
         f_lexicon.update(f)
@@ -16,10 +16,13 @@ def get_initial(sentance_pairs,fm_flag=False):
     if fm_flag:
         for k in forced_mappings:
             t_initial[(k,forced_mappings[k])] = 1
+        if trans_to_pseud_flag:
+            for k in forced_mappings_trans_to_pseud:
+                t_initial[(k, forced_mappings_trans_to_pseud[k])] = 1
     return t_initial
 
 
-def get_next_t_estimate(sentence_pairs, t_e_given_f,fm_flag=False):
+def get_next_t_estimate(sentence_pairs, t_e_given_f,fm_flag=False,trans_to_pseud_flag=False):
     # using algoritm from http://mt-class.org/jhu/slides/lecture-ibm-model1.pdf
     # gives t(e|f)
     count = defaultdict(float)
@@ -38,19 +41,21 @@ def get_next_t_estimate(sentence_pairs, t_e_given_f,fm_flag=False):
     for f,e in product(lexicon_f,lexicon_e):
         if fm_flag and f in forced_mappings:
             t_e_given_f[(e,f)] = 1 if forced_mappings[f] == e else 0
+        elif fm_flag and f in forced_mappings_trans_to_pseud and trans_to_pseud_flag:
+            t_e_given_f[(e,f)] = 1 if forced_mappings_trans_to_pseud[f] == e else 0
         else:
             t_e_given_f[(e, f)] = count[(e, f)] / total[f]
     return t_e_given_f
 
 
-def train(sentence_pairs, loop_count, null_flag=True,fm_flag=False):
+def train(sentence_pairs, loop_count, null_flag=True,fm_flag=False,trans_to_pseud_flag=False):
     if null_flag:
         sentence_pairs = [(["NULL"]+f,e) for f,e in sentence_pairs]
-    t_e_given_f = get_initial(sentence_pairs,fm_flag=fm_flag)
+    t_e_given_f = get_initial(sentence_pairs,fm_flag,trans_to_pseud_flag)
     for i in range(loop_count):
         if i % 20 == 19 and __name__ != "__main__":
             print("Loop: "+str(i+1))
-        t_e_given_f = get_next_t_estimate(sentence_pairs,t_e_given_f,fm_flag=fm_flag)
+        t_e_given_f = get_next_t_estimate(sentence_pairs,t_e_given_f,fm_flag,trans_to_pseud_flag=trans_to_pseud_flag)
     return t_e_given_f
 
 

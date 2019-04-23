@@ -238,7 +238,7 @@ def get_phrases(phrase_alignment, fs, es):
     return phrases
 
 
-def get_phrase_probabilities(alignments,sentance_pairs):
+def get_phrase_probabilities(sentance_pairs,alignments):
     phrase_count = defaultdict(int)
     f_phrase_count = defaultdict(int)
     for align,pair in zip(alignments,sentance_pairs):

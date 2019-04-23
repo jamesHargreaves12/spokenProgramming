@@ -5,6 +5,7 @@ from baseline.constants import NOT_A_TOKEN_IN_USE
 from data_prep_tools import get_data
 from tools.find_resource_in_project import get_path
 
+
 def get_programming_symbols_map():
     # source = https://blog.codinghorror.com/ascii-pronunciation-rules-for-programmers/
     symbol_to_name = {}
@@ -44,38 +45,6 @@ def get_programming_symbols_map():
     for key in keys_to_remove:
         symbol_to_name.pop(key)
     symbol_to_name.update(new_symbols)
-    # symbol_to_name["\\n"] = set(["newline", "backslash n"])
-    # symbol_to_name["*"].add("multiplied by")
-    # symbol_to_name["*"].add("multiply")
-    # symbol_to_name["*"].add("times by")
-    # symbol_to_name["%"].add("percent")
-    # symbol_to_name["-"].add("subtract")
-    # symbol_to_name["="].add("equal")
-    # symbol_to_name["="].add("is")
-    # symbol_to_name["="].remove("gets")
-    # symbol_to_name["="].remove("takes")
-    # symbol_to_name["="].add("is equal to")
-    # symbol_to_name["="].add("is set to")
-    # symbol_to_name["/"].add("divided by")
-    # symbol_to_name["/"].add("divided")
-    # symbol_to_name["/"].add("divide")
-    # symbol_to_name["/"].add("div")
-    # symbol_to_name[">"].add("is greater than")
-    # symbol_to_name[">"].add("larger than")
-    # symbol_to_name[">"].add("bigger than")
-    # symbol_to_name["<"].remove("from")
-    # symbol_to_name[">"].remove("into")
-    # symbol_to_name["<"].add("is less than")
-    # symbol_to_name["<"].add("smaller than")
-    # symbol_to_name["("].add("open bracket")
-    # symbol_to_name[")"].add("close bracket")
-    # symbol_to_name["["].add("square bracket")
-    # symbol_to_name["["].add("open square bracket")
-    # symbol_to_name["["].remove("opening bracket")
-    # symbol_to_name["]"].remove("closing bracket")
-    # symbol_to_name["]"].add("close square bracket")
-    # symbol_to_name[":"].remove("dots")
-
     return symbol_to_name
 
 
@@ -100,26 +69,8 @@ def get_pseudocode_tokens(tokenized_pseudocode_files=None):
         if token in symbol_to_name.keys():
             for name in symbol_to_name[token]:
                 token_to_symbol[name] = token
-        elif token == "EMPTY_LIST":
-            token_to_symbol["empty list"] = token
-            token_to_symbol["empty"] = token
         else:
             token_to_symbol[token] = token
-
-
-    if NOT_A_TOKEN_IN_USE:
-        # this is a horrid hack for now - should be implemented as a negative list
-        token_to_symbol["end for"] = "NOT_A_TOKEN"
-        token_to_symbol["end if"] = "NOT_A_TOKEN"
-        token_to_symbol["end the if"] = "NOT_A_TOKEN"
-        token_to_symbol["end the for"] = "NOT_A_TOKEN"
-    # token_to_symbol["increment"] = "+="
-    # token_to_symbol["decrement"] = "-="
-    # token_to_symbol["different than"] = "!="
-    # token_to_symbol["position"] = "index"
-    # token_to_symbol["location"] = "index"
-    # token_to_symbol["key"] = "index"
-    # token_to_symbol["otherwise"] = "else"
     return token_to_symbol
 
 if __name__ == "__main__":

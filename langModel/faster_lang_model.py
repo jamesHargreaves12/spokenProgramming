@@ -28,26 +28,40 @@ def get_ngram_model(sentances, n, smoothing_type="LAPLACE", padded=False):
             for tok in ngram_counts[prefix]:
                 known_prefix_token[prefix][tok] = (ngram_counts[prefix][tok]+1)/(total[prefix]+len_lexicon)
 
-        def get_prob(prefix,tok):
-            if prefix not in known_prefix_defaults:
-                return unknown_prefix
-            if tok in known_prefix_token[prefix]:
-                return known_prefix_token[prefix][tok]
-            return known_prefix_defaults[prefix]
+        # def get_prob(prefix,tok):
+        #     if prefix not in known_prefix_defaults:
+        #         return unknown_prefix
+        #     if tok in known_prefix_token[prefix]:
+        #         return known_prefix_token[prefix][tok]
+        #     return known_prefix_defaults[prefix]
         return unknown_prefix,known_prefix_defaults,known_prefix_token
     else:
         print("ERROR: UNKNOWN smoothing type")
 
 
+def norm_word(word:str):
+    if word.startswith("VARIABLE") or word.startswith("FUNCTION_CALL"):
+        return word[:word.rindex("_")]
+    return word
+
+def norm_sentence(sentence:list):
+    return [norm_word(word) for word in sentence]
+
+
 class LanguageModel():
-    def __init__(self, sentences, n=2, padded=True, variable_func_uniform=False):
+    def __init__(self, sentences, n=2, padded=True, norm_toks_flag=False):
         self.n = n
         self.padded = padded
+        self.variable_func_uniform = norm_toks_flag
+        if norm_toks_flag:
+            sentences = [norm_sentence(s) for s in sentences]
         self.default,self.prefix_defaults,self.grams = get_ngram_model(sentences, n, padded=padded)
-        self.variable_func_uniform = variable_func_uniform
+
         self.log_default = log(self.default)
         self.log_prefix_defaults = {}
         self.log_grams = {}
+
+
         for prefix,default in self.prefix_defaults.items():
             self.log_prefix_defaults[prefix] = log(default)
             self.log_grams[prefix] = {}
@@ -76,6 +90,8 @@ class LanguageModel():
         :param padded_right: boolean
         :return: float
         """
+        if self.variable_func_uniform:
+            sentence = norm_sentence(sentence)
         n = self.n
         if padded_left:
             sentence = ["<s>"] * (n-1) + sentence
@@ -104,6 +120,9 @@ class LanguageModel():
         :param padded_right: boolean
         :return: float
         """
+        if self.variable_func_uniform:
+            sentence = norm_sentence(sentence)
+
         n = self.n
         if padded_left:
             sentence = ["<s>"] * (n-1) + sentence
@@ -124,8 +143,11 @@ class LanguageModel():
             prefix.append(tok)
         return prob_sentence
 
-
     def get_probability_next_phrase(self,current_toks,next_phrase):
+        if self.variable_func_uniform:
+            current_toks = norm_sentence(current_toks)
+            next_phrase = norm_sentence(next_phrase)
+
         prefix = tuple(["<s>"] * (self.n - 1 - len(current_toks)) + current_toks[1-self.n:])
         product_prob = 1
         for i,tok in enumerate(next_phrase):
@@ -135,6 +157,9 @@ class LanguageModel():
         return product_prob
 
     def get_log_prob_next_phrase(self, current_toks, next_phrase):
+        if self.variable_func_uniform:
+            current_toks = norm_sentence(current_toks)
+            next_phrase = norm_sentence(next_phrase)
         prefix = tuple(["<s>"] * (self.n - 1 - len(current_toks)) + current_toks[1-self.n:])
         # log(1) = 0
         log_prob = 0
@@ -148,6 +173,8 @@ def train_lang_model(sentance_pairs,n):
 
 
 if __name__ == "__main__":
+
+
 
     def equal_to5dp(val1,val2):
         return round(val1,5) == round(val2,5)

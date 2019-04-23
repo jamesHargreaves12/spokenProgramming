@@ -3,8 +3,7 @@ from baseline.get_pseudocode_token_list import get_pseudocode_tokens
 from data_prep_tools import get_data
 from termcolor import colored
 from baseline import get_n_gram_reordering
-from langModel.faster_lang_model import LanguageModel
-from tools.minimum_edit_distance import minimum_edit_distance
+from tests.minimum_edit_distance import minimum_edit_distance
 import math
 from other.matrix_to_image import show_heatmap
 from nltk.stem import PorterStemmer
@@ -77,10 +76,11 @@ def transcript_to_code_tokens(transcript_tokens, token_map, stem_flag):
 
         if len(transcript_tokens) == cur_index:
             print_coloured_changes(removed, mapped, orig_tokens)
-            if NOT_A_TOKEN_IN_USE:
-                return [x for x in result if x != "NOT_A_TOKEN"]
-            else:
-                return result
+            return result
+            # if NOT_A_TOKEN_IN_USE:
+            #     return [x for x in result if x != "NOT_A_TOKEN"]
+            # else:
+            #     return result
 
 
 def baseline(stem_flag):
@@ -101,7 +101,7 @@ def baseline(stem_flag):
                 transcript = transcripts_simplified[i]
                 transcript_tokens = [x for x in transcript.strip("\n").split(" ") if not x == ""]
                 only_posible_tokens = transcript_to_code_tokens(transcript_tokens, pseudocode_tokens, stem_flag)
-                pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering_v1(only_posible_tokens, n, t)
+                pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering_old_DO_NOT_USE(only_posible_tokens, n, t)
                 reordered = [x for x in pseudocode_attempt.split(" ") if not x == ""]
                 actual = [x for x in truth[i].split(" ") if not x == ""]
                 edit_distance = minimum_edit_distance(reordered,actual)

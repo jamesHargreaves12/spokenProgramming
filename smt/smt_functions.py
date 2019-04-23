@@ -7,22 +7,18 @@ from smt.ibmmodel1 import get_alignments_1
 from smt.test_models import print_alignment
 
 
-def get_language_model(train_data,n):
+def get_language_model(train_data,n,norm_toks_flag=False):
     pseudocode_toks = [p for _,p in train_data]
-    return LanguageModel(pseudocode_toks,n)
+    return LanguageModel(pseudocode_toks,n,norm_toks_flag=norm_toks_flag)
 
 # Constants = epoch,null_flag
 # from ibmmodels (applies also to model2) = PREVENT_VARIABLE_TO_NULL_MAP
 def get_alignment_1(sentence_pairs: list, epoch: int, null_flag: bool,fm_flag=False):
     return get_alignments_1(sentence_pairs, epoch, null_flag,fm_flag=fm_flag)
 
+
 def get_p_table_1(sentence_pairs, alignments):
     return ibmmodel1.get_phrase_table_m1(alignments, sentence_pairs)
-
-def get_log_phrase_table1(sentance_pairs,alignments):
-    phrase_t = get_p_table_1(sentance_pairs,alignments)
-    ibm_models.prune_phrase_table(phrase_t, e_max_length=9, f_max_length=15)
-    return ibm_models.get_log_phrase_table(phrase_t)
 
 
 # Constants = m1_loop_count,m2_loop_count,null_flag
@@ -37,9 +33,10 @@ def get_p_table2(sentance_pairs,alignment):
     phrase_t = ibmmodel2.get_phrase_table_m2(sentance_pairs,alignment)
     return phrase_t
 
+
 # sentance_pairs are zipped
-def get_log_phrase_table2(sentance_pairs,alignments):
-    phrase_t = get_p_table2(sentance_pairs,alignments)
+def get_log_phrase_table(sentence_pairs,alignments):
+    phrase_t = ibm_models.get_phrase_probabilities(sentence_pairs,alignments)
     ibm_models.prune_phrase_table(phrase_t, e_max_length=9, f_max_length=15)
     return ibm_models.get_log_phrase_table(phrase_t)
 

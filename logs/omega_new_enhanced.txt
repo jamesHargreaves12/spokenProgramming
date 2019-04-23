@@ -1,0 +1,27 @@
+omega enhanced
+omega 0.5
+Edit distance = 362
+omega 1.0
+Edit distance = 360
+omega 1.5
+Edit distance = 358
+omega 2.0
+Edit distance = 357
+omega 2.5
+Edit distance = 354
+omega 2.1
+Edit distance = 357
+omega 2.2
+Edit distance = 359
+omega 2.3
+Edit distance = 354
+omega 2.4
+Edit distance = 354
+omega 2.6
+Edit distance = 354
+omega 2.7
+Edit distance = 354
+omega 2.8
+Edit distance = 354
+omega 2.9
+Edit distance = 354

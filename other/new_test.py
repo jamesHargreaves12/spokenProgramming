@@ -108,7 +108,15 @@ from smt.ibm_models import get_best_pairing
 # for i,d in enumerate(ds):
 #     print(probability_distance(d,5,i))
 
-a = [1,2,3,4,5]
-print(a[:1]+a[2:])
-print(a[:0]+a[1:])
-print(a[:4]+a[5:])
+# a = [1,2,3,4,5]
+# print(a[:1]+a[2:])
+# print(a[:0]+a[1:])
+# print(a[:4]+a[5:])
+
+
+# print("welcome" is "welcome")
+# print("wel" + "l" is "well")
+# print("welcome" == "welcome")
+
+
+print([x for x in zip([1,2,3],['a'])])

@@ -30,7 +30,8 @@ def get_pseudocode_n_gram_counts(n):
     return counts
 
 
-def get_most_likely_ordering_v1(transcript, n, threshold):
+def get_most_likely_ordering_old_DO_NOT_USE(transcript, n, threshold):
+    print("DO NOT USE THIS METHOD")
     n_gram_counts = get_pseudocode_n_gram_counts(n)
     unigrams = get_unigrams_from_text(transcript)
     for i in range(len(unigrams)-n+1):

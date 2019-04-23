@@ -17,6 +17,8 @@ def get_pseudocode_tokens(train_data):
     pseudocode_toks = [p for _,p in train_data]
     return get_pseudocode_token_list.get_pseudocode_tokens(pseudocode_toks)
 
+def get_tokeninze_trans(trans,pseud_tokens,stem_flag):
+    return transcript_to_code_tokens(trans,pseud_tokens,stem_flag)
 
 # infered constants = n in lang_model
 # Constants = stem_flag, threshold

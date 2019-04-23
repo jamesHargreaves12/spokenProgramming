@@ -13,4 +13,4 @@ def find_files(word):
                     print(str(i) +" - " + file)
                     print(text)
 
-find_files("then")
+find_files("set")

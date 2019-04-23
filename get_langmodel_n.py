@@ -1,6 +1,6 @@
 from _decimal import Decimal
 
-from get_data import validation_set, train_test_data
+from tools.get_test_data import validation_set, train_test_data
 from langModel.faster_lang_model import LanguageModel
 from smt import smt_functions
 import matplotlib.pyplot as plt

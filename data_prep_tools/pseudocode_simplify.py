@@ -20,7 +20,7 @@ def simplified_output(tree, variable_list):
         return simplified_output(tree[1],variable_list)
 
     elif label == "RETURN":
-        return "return " + simplified_output(tree[1],variable_list) + " "
+        return "output " + simplified_output(tree[1],variable_list) + " "
 
     elif label == "FOR IN":
         expr = simplified_output(tree[2],variable_list)

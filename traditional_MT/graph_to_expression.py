@@ -1,6 +1,6 @@
 from enum import Enum
 
-from data_prep_tools.constants import base_dir_2
+from data_prep_tools.constants import base_dir_2, base_dir_1
 from data_prep_tools.graph_funs import DependencyGraph
 from tools.find_resource_in_project import get_path
 from traditional_MT import load_dep_parse
@@ -30,7 +30,7 @@ trans_dict = {"plus": "+",
               "store in": "=",
               "true": "true",
               "false": "false",
-              "return": "return",
+              "return": "output",
               "variable_0": "VARIABLE_0",
               "variable_1": "VARIABLE_1",
               "variable_2": "VARIABLE_2",
@@ -53,8 +53,8 @@ trans_dict = {"plus": "+",
               "number": "NUMBER",
               "and": "and",
               "plus equal+s": "+=",
-              "empty": "[]",
-              "empty not+": "!= []",
+              "empty": "EMPTY_LIST",
+              "empty not+": "!= EMPTY_LIST",
               "set": "=",
               "in": "in",
               "while": "while",
@@ -77,14 +77,14 @@ trans_dict = {"plus": "+",
               "for in": ("for", "in"),
               "get": "=",
               "create": "=",
-              "open bracket":"(",
-              "close bracket": ")",
-              "open parenthesis+s":"(",
-              "close parenthesis+s": ")",
-              "open bracket+s":"(",
-              "close bracket+s": ")",
-              "open parenthesis":"(",
-              "close parenthesis": ")",
+              # "open bracket":"(",
+              # "close bracket": ")",
+              # "open parenthesis+s":"(",
+              # "close parenthesis+s": ")",
+              # "open bracket+s":"(",
+              # "close bracket+s": ")",
+              # "open parenthesis":"(",
+              # "close parenthesis": ")",
               "be+s equal": "=",
               "plus equal": "+=",
               "increments by": "+=",
@@ -115,7 +115,8 @@ trans_dict = {"plus": "+",
               "increment+ing by": "+=",
               "otherwise": "else",
               "different": "!=",
-              "return+s": "return",
+              "return+s": "output",
+              "output": "output",
               "over":"/",
               "decrement+s by":" -=",
               "decrement+s": "-= 1",
@@ -123,7 +124,9 @@ trans_dict = {"plus": "+",
               "bigger than": ">",
               "subtract": "-",
               "add and": "+",
-              "store that": "="
+              "store that": "=",
+              "th": "index",
+              "Str": "STRING_CONST"
 
 }
 # Mapping from token to context list in which they shouldnt be filtered
@@ -198,9 +201,9 @@ lr_assign_prefix = ["set","initialize","add to","create"]
 rl_assign = ["store in","store", "store that"]
 no_affect_on_context = ["and","by","or","not+"]
 comparison_strings = ["be+s less than", "different", "be+s bigger than","bigger than", "bigger", "be+s greater than", "be+s greater ", "greater than or","greater than or equal","be+s greater than or equal","be+s less than or equal","less than or equal","less than or","smaller than", "greater than", "less than", "be+s","be+s equal", "not+ equal", "be+s larger", "greater","smaller","larger", "equal+s equal+s"]
-index_infix = ["index","key","index+ed at"]
+index_infix = ["index","key","index+ed at", "th"]
 index_prefix = ["look+ing up", "look up"]
-expected_tails = ["true","false","empty not+", "open parenthesis", "close bracket+s","open bracket+s", "close parenthesis", "open parenthesis+s", "close parenthesis+s", "open bracket", "close bracket", "str"]
+expected_tails = ["true","false","empty not+", "open parenthesis", "close bracket+s","open bracket+s", "close parenthesis", "open parenthesis+s", "close parenthesis+s", "open bracket", "close bracket", "str","Str","empty"]
 boolean_control_flow = ["if","else", "else if", "while", "for","otherwise"]
 
 # bad examples are 30,34,47,
@@ -208,7 +211,7 @@ boolean_control_flow = ["if","else", "else if", "while", "for","otherwise"]
 def get_next_context(cur_context, token,child_num):
     if token in load_dep_parse.aritmetic_strings + comparison_strings:
         return Context.ARITHMETIC
-    elif token in ["return","return+s"]:
+    elif token in ["return","return+s","output"]:
         return Context.RETURN
     elif token in boolean_control_flow:
         return Context.BOOL if child_num == 0 else Context.ROOT
@@ -322,7 +325,7 @@ def get_expression(graph, root, contex):
     elif token == "add and":
         items.insert(1,node_str)
 
-    elif token in ["return","return+s"]:
+    elif token in ["return","return+s","output"]:
         items.insert(0,node_str)
 
     elif token == "not+":
@@ -399,16 +402,30 @@ def get_output_string(tokens,dependencies):
 
 if __name__ == "__main__":
     toks,deps = load_dep_parse.get_token_deps(base_dir=base_dir_2)
+    # for tok, dep in zip(toks, deps):
+    #     out = get_output_string(tok,dep)
+    #     print(out)
+
     # for i in range (40,49):
     #     print("***************",i)
     #     print(get_output_string(toks[i],deps[i]))
 
+    # toks,deps = load_dep_parse.get_token_deps(base_dir=base_dir_1)
     # with open(get_path("/results/traditional_train.txt"),"w+") as file:
     #     for tok,dep in zip(toks[:49],deps[:49]):
     #         file.write(get_output_string(tok,dep))
     #         file.write('\n')
 
-    with open(get_path("/results/traditional_test2.txt"),"w+") as file:
-        for tok,dep in zip(toks,deps):
+    toks,deps = load_dep_parse.get_token_deps(base_dir=base_dir_1)
+    with open(get_path("/results/traditional_test1.txt"),"w+") as file:
+        for tok,dep in zip(toks[49:],deps[49:]):
             file.write(get_output_string(tok,dep))
             file.write('\n')
+
+
+
+    # toks,deps = load_dep_parse.get_token_deps(base_dir=base_dir_2)
+    # with open(get_path("/results/traditional_test2.txt"),"w+") as file:
+    #     for tok,dep in zip(toks,deps):
+    #         file.write(get_output_string(tok,dep))
+    #         file.write('\n')

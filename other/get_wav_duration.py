@@ -42,3 +42,5 @@ def get_audio_lengths_of_fold_1():
     for og_files,q_num,prefix in list_of_files:
         results.append(get_length_of_file(og_files,q_num,prefix))
     return results
+
+print(get_audio_lengths_of_fold_1())

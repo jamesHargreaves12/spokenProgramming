@@ -9,6 +9,7 @@ alpha = 0.7
 omega = 2
 log_omega = log(omega)
 log_alpha = log(alpha)
+beam_size = 1000
 print_on = True
 
 
@@ -153,16 +154,16 @@ def get_new_hyps(current_bounds,log_phrase_table,source,len_source):
 def get_phrase_to_max_prob(phrase_table,lang_model:LanguageModel):
     phrase_to_max_prob = {}
     for phrase in phrase_table:
-        max_translation = max(phrase_table[phrase], key=lambda key: phrase_table[phrase][key]+ (1 if len(key) < 2 else lang_model.get_log_prob(key[0],key[1:])))
+        max_translation = max(phrase_table[phrase], key=lambda key: phrase_table[phrase][key]+ (1 if len(key) < 2 else lang_model.get_probability_next_phrase([key[0]],key[1:])))
         phrase_to_max_prob[phrase] = phrase_table[phrase][max_translation] \
-                                     + (0 if len(max_translation) < 2 else lang_model.get_log_prob(max_translation[0],max_translation[1:]))
+                                     + (0 if len(max_translation) < 2 else lang_model.get_probability_next_phrase([max_translation[0]],max_translation[1:]))
     return phrase_to_max_prob
 
 
 def add_to_hypothesis_stack(stacks,item,thresh,i):
     cost = item
     stack = stacks[i]
-    if len(stack) >= 1000:
+    if len(stack) >= beam_size:
         if cost <= stack[0]:
             # this item is worse than all the items on the stack so do nothing
             return
@@ -172,7 +173,7 @@ def add_to_hypothesis_stack(stacks,item,thresh,i):
             thresh[i] = stack[0][0]
     else:
         heappush(stack,item)
-        if len(stack) == 1000:
+        if len(stack) == beam_size:
             thresh[i] = stack[0][0]
 
 

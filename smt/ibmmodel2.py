@@ -6,8 +6,8 @@ from smt.test_models import print_alignment
 from tools.find_resource_in_project import get_path
 
 
-def get_initial_t(sentence_pairs, m1_loop_count, null_flag=True, fm_flag=False):
-    return ibmmodel1.train(sentence_pairs, m1_loop_count, null_flag=null_flag,fm_flag=fm_flag)
+def get_initial_t(sentence_pairs, m1_loop_count, null_flag=True, fm_flag=False,trans_to_pseud_flag=False):
+    return ibmmodel1.train(sentence_pairs, m1_loop_count, null_flag=null_flag,fm_flag=fm_flag,trans_to_pseud_flag=trans_to_pseud_flag)
 
 
 def get_next_estimate(t_e_given_f:dict, d_e_given_f:dict, sentence_pairs, null_flag, fm_flag=False):
@@ -74,13 +74,13 @@ def get_next_estimate(t_e_given_f:dict, d_e_given_f:dict, sentence_pairs, null_f
     return t_e_given_f, d_e_given_f
 
 
-def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filename=None,fm_flag=False):
+def train(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,t_filename=None,fm_flag=False,trans_to_pseud_flag=False):
     print("Train IBM_M1")
     d_e_given_f = {}
     if t_filename:
         t_e_given_f = ibmmodel1.open_t(t_filename)
     else:
-        t_e_given_f = get_initial_t(sentence_pairs, m1_loop_count, null_flag, fm_flag=fm_flag)
+        t_e_given_f = get_initial_t(sentence_pairs, m1_loop_count, null_flag, fm_flag=fm_flag,trans_to_pseud_flag=trans_to_pseud_flag)
 
     print("Train IBM_M2")
     if null_flag:
@@ -163,8 +163,7 @@ def print_specific_d(d,l,m):
         print(j,d[(j,l,m)])
 
 def get_alignment_models_2(sentence_pairs, m1_loop_count, m2_loop_count, null_flag=True,fm_flag=False):
-    t_e_given_f, d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag,fm_flag=fm_flag)
-
+    t_e_given_f, d_e_given_f = train(sentence_pairs,m1_loop_count,m2_loop_count,null_flag,fm_flag=fm_flag,trans_to_pseud_flag=True)
     rev_pairs = [(y,x) for x,y in sentence_pairs]
     t_f_given_e, d_f_given_e = train(rev_pairs     ,m1_loop_count,m2_loop_count,null_flag,fm_flag=fm_flag)
     return t_e_given_f,d_e_given_f,t_f_given_e,d_f_given_e

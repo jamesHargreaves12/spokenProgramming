@@ -2,7 +2,7 @@ from baseline.get_pseudocode_token_list import get_pseudocode_tokens
 from data_prep_tools import get_data
 from termcolor import colored
 from baseline import get_n_gram_reordering
-from tools.minimum_edit_distance import minimum_edit_distance
+from tests.minimum_edit_distance import minimum_edit_distance
 import math
 from other.matrix_to_image import show_heatmap
 from nltk.stem import PorterStemmer
@@ -90,7 +90,7 @@ def baseline():
                 print(i)
                 transcript = transcripts_simplified[i]
                 only_posible_tokens = transcript_to_code_tokens(transcript.strip("\n"),pseudocode_tokens)
-                pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering_v1(only_posible_tokens, n, t)
+                pseudocode_attempt = get_n_gram_reordering.get_most_likely_ordering_old_DO_NOT_USE(only_posible_tokens, n, t)
                 reordered = [x for x in pseudocode_attempt.split(" ") if not x == ""]
                 actual = [x for x in truth[i].split(" ") if not x == ""]
                 with_reordering_distance.append(minimum_edit_distance(reordered,actual))

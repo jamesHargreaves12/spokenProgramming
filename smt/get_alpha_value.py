@@ -1,10 +1,7 @@
 import math
 
-from get_data import train_test_data
+from tools.get_test_data import train_test_data
 from smt import smt_functions
-from smt.test_models import print_alignment
-from scipy.optimize import minimize
-import numpy as np
 
 
 def remove_swallowed_phrases(phrases:list):
@@ -76,9 +73,10 @@ def probability_distance(d,n,i):
 def get_distances_of_alignments(alignments):
     dss = []
     for i,align in enumerate(alignments):
-        ps = get_smallest_phrase_set(align)
-        ds = get_distances(ps)
-        dss.append(ds)
+        if len(align) > 0:
+            ps = get_smallest_phrase_set(align)
+            ds = get_distances(ps)
+            dss.append(ds)
     return dss
 
 

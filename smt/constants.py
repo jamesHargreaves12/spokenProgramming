@@ -25,5 +25,17 @@ forced_mappings = {
     "FUNCTION_CALL_12": "FUNCTION_CALL_12",
     "FUNCTION_CALL_13": "FUNCTION_CALL_13",
     "NUMBER": "NUMBER",
-    "STRING_CONST": "STRING_CONST"
+    "STRING_CONST": "STRING_CONST",
+    "true":'true',
+    "false":"false",
+}
+
+forced_mappings_trans_to_pseud = {
+    "return": "output",
+    "output": "output",
+    "if": "if",
+    "else": "else",
+    "while":"while",
+    "for": "for"
+
 }
